@@ -1,20 +1,31 @@
+import { chatRoute } from '@mastra/ai-sdk';
 import { Mastra } from "@mastra/core/mastra";
-import { PinoLogger } from "@mastra/loggers";
-import { LibSQLStore } from "@mastra/libsql";
-import { DuckDBStore } from "@mastra/duckdb";
 import { MastraCompositeStore } from "@mastra/core/storage";
+import { DuckDBStore } from "@mastra/duckdb";
+import { LibSQLStore } from "@mastra/libsql";
+import { PinoLogger } from "@mastra/loggers";
 import {
-  Observability,
-  DefaultExporter,
   CloudExporter,
+  DefaultExporter,
+  Observability,
   SensitiveDataFilter,
 } from "@mastra/observability";
-import { weatherWorkflow } from "./workflows/weather-workflow";
 import { weatherAgent } from "./agents/weather-agent";
+import { weatherWorkflow } from "./workflows/weather-workflow";
 
+/**
+ * Mastra インスタンス
+ */
 export const mastra = new Mastra({
   workflows: { weatherWorkflow },
   agents: { weatherAgent },
+  server: {
+    apiRoutes: [
+      chatRoute({
+        path: '/chat/:agentId',
+      }),
+    ],
+  },
   storage: new MastraCompositeStore({
     id: "composite-storage",
     default: new LibSQLStore({
