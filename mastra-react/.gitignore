@@ -27,3 +27,5 @@ dist-ssr
 
 mastra.db
 mastra.*
+
+.mastra

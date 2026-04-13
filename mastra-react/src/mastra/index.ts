@@ -1,4 +1,4 @@
-import { chatRoute } from '@mastra/ai-sdk';
+import { chatRoute } from "@mastra/ai-sdk";
 import { Mastra } from "@mastra/core/mastra";
 import { MastraCompositeStore } from "@mastra/core/storage";
 import { DuckDBStore } from "@mastra/duckdb";
@@ -22,7 +22,7 @@ export const mastra = new Mastra({
   server: {
     apiRoutes: [
       chatRoute({
-        path: '/chat/:agentId',
+        path: "/chat/:agentId",
       }),
     ],
   },
