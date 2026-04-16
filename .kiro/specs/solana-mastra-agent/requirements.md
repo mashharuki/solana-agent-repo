@@ -1,20 +1,9 @@
-# Requirements: solana-mastra-agent
+# Requirements Document
 
-> **Status**: Pending — requirements not yet generated.
-> Run `/kiro:spec-requirements solana-mastra-agent` to generate requirements.
+## Project Description (Input)
 
-## Overview
+solana-mastra-agent
 
-_To be filled in during the requirements phase._
+## Requirements
 
-## Functional Requirements
-
-_To be generated._
-
-## Non-Functional Requirements
-
-_To be generated._
-
-## Constraints
-
-_To be generated._
+<!-- Will be generated in /kiro:spec-requirements phase -->
