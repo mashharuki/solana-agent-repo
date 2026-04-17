@@ -2,6 +2,14 @@
 
 ## 背景
 
+Solana Superteam Japan主催の Solana BootCampに講師として登壇する予定です。
+
+テーマはズバリ AI Agentです！！
+
+講師として最高の講演を行いたいので、そのための最高のAI Agentアプリを開発したいと考えています！
+
+そこで React と Mastra と TypeScript と Phontom Connectと Solanaを使って自然言語でSolana上の資産やNFTの発行・送金・スマートコントラクトの呼び出しができるようなAI Agentアプリを開発したいと考えています！
+
 ## 概要・イメージしている処理の流れ
 
 - アプリを起動する
