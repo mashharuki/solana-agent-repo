@@ -1,24 +1,24 @@
 import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
+    Conversation,
+    ConversationContent,
+    ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import {
-  Message,
-  MessageContent,
-  MessageResponse,
+    Message,
+    MessageContent,
+    MessageResponse,
 } from "@/components/ai-elements/message";
 import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputTextarea,
+    PromptInput,
+    PromptInputBody,
+    PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import {
-  Tool,
-  ToolContent,
-  ToolHeader,
-  ToolInput,
-  ToolOutput,
+    Tool,
+    ToolContent,
+    ToolHeader,
+    ToolInput,
+    ToolOutput,
 } from "@/components/ai-elements/tool";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type ToolUIPart } from "ai";
@@ -34,7 +34,7 @@ export default function App() {
   // useChat フックを使用してチャットの状態と関数を取得
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
-      api: "http://localhost:4111/chat/weather-agent",
+      api: "/api/chat/weather-agent",
     }),
   });
 

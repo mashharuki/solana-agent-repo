@@ -1,4 +1,42 @@
-# React + TypeScript + Vite
+# React + TypeScript + Vite + Mastra
+
+Solana AI Agent アプリ — Mastra を使った AI エージェントチャットアプリケーション
+
+## 開発サーバーの起動
+
+開発時は**2つのサーバー**を別々のターミナルで起動する必要があります:
+
+### ターミナル1: フロントエンド (Vite dev server)
+```bash
+bun run dev
+# または npm run dev
+```
+→ http://localhost:5173 でフロントエンドが起動
+
+### ターミナル2: Mastraバックエンド
+```bash
+npx mastra dev
+```
+→ http://localhost:4111 で Mastra サーバーが起動
+
+フロントエンドは `/api/*` へのリクエストを自動的に Mastra サーバー (localhost:4111) にプロキシします。
+
+## ビルド
+
+```bash
+bun run build
+```
+
+## その他のコマンド
+
+```bash
+bun run format  # Biome でコードフォーマット
+bun run lint    # ESLint でコードチェック
+```
+
+---
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

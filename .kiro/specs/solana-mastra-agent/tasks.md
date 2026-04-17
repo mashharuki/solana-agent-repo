@@ -8,7 +8,7 @@
   - Zod スキーマと TypeScript 型の両方を定義し、ツール入力バリデーションに再利用できるようにする
   - _Requirements: 4.1, 5.1, 5.2, 5.3, 5.4, 5.5, 8.3_
 
-- [ ] 1.2 開発環境と API パスの統一設定
+- [x] 1.2 開発環境と API パスの統一設定
   - Vite dev server に `/api` プロキシを設定し、フロントエンドからの API リクエストを Mastra サーバー（ポート 4111）に転送できるようにする
   - Mastra の chatRoute パスを `/api/chat/:agentId` に変更して、開発時と Vercel 本番で同一 URL を使用できるようにする
   - `bun dev` でフロントエンドと Mastra サーバーを同時起動する手順を確認する
