@@ -128,6 +128,30 @@ graph TB
 | Styling | Tailwind CSS 4 + Shadcn UI + motion | Solana テーマ UI | 既存 + CSS 変数更新 |
 | Toolchain | bun + biome | パッケージ管理・Lint | 既存 |
 
+**開発時 vs 本番の API パス統一戦略**
+
+開発時（Vite dev server）と本番（Vercel Serverless）で同一の API パスを使用するために、以下の設定を適用する:
+
+1. **Mastra chatRoute パスを `/api/chat/:agentId` に変更**（`src/mastra/index.ts`）:
+   ```typescript
+   chatRoute({ path: "/api/chat/:agentId" })
+   ```
+
+2. **Vite dev server プロキシを設定**（`vite.config.ts`）:
+   ```typescript
+   server: {
+     proxy: {
+       "/api": "http://localhost:4111"
+     }
+   }
+   ```
+
+3. **SolanaChat の transport URL**:
+   ```typescript
+   new DefaultChatTransport({ api: "/api/chat/solana-agent" })
+   ```
+   開発時は Vite プロキシ経由で `localhost:4111` に転送され、Vercel 本番では Serverless Function が `/api/chat/solana-agent` を直接処理する。
+
 ---
 
 ## System Flows
@@ -588,17 +612,28 @@ interface CallProgramInput {
 ```typescript
 interface SolanaChatState {
   input: string;
-  pendingTxRequest: SolanaTxRequest | null;  // 署名待ちトランザクション
+  pendingTxRequest: SolanaTxRequest | null;  // 署名待ちトランザクション（1件のみ）
 }
 
-// useChat の transport エンドポイント
+// useChat の transport エンドポイント（開発・本番で共通パス）
 const transport = new DefaultChatTransport({
-  api: "/api/chat/solana-agent",  // Vercel 向けパス
+  api: "/api/chat/solana-agent",
 });
 ```
 
+**pendingTxRequest 状態ガード規則**
+
+`pendingTxRequest !== null` の間は以下のガードを適用し、不定状態を防ぐ:
+
+| 状態 | ルール |
+|---|---|
+| 署名待ち中（`pendingTxRequest !== null`） | プロンプト入力を `disabled` にしてメッセージ送信をブロックする |
+| 署名完了 or キャンセル | `pendingTxRequest` を `null` にリセットしてプロンプトを再有効化 |
+| タイムアウト（120 秒経過） | `pendingTxRequest` を自動キャンセルし、チャットに「署名がタイムアウトしました。再度お試しください。」を追加 |
+| Agent が複数の tx を返した場合 | 先着 1 件のみ `pendingTxRequest` に設定し、後続の tx は Agent に「未署名の取引があります」と応答してスキップ |
+
 **Implementation Notes**
-- Integration: `messages[].parts` を走査し `part.type === "tool-result"` かつ `output.type === "solana_tx_request"` の場合 TransactionCard をレンダリング
+- Integration: `messages[].parts` を走査し `part.type === "tool-result"` かつ `output.type === "solana_tx_request"` の場合 TransactionCard をレンダリング。`pendingTxRequest` がすでに存在する場合は新たな tx を無視する
 - Validation: ウォレット未接続時に sendMessage が呼ばれた場合はエラーをチャット内表示
 - Risks: Mastra Agent が長時間処理する場合の UX → streaming レスポンスで逐次表示（useChat のデフォルト動作を活用）
 
@@ -642,7 +677,19 @@ TransactionRecord
 
 **Agent ↔ Frontend のトランザクション型契約**
 
-Mastra ツールの返却値に `type: "solana_tx_request"` の discriminated union を使用する。Frontend はこの `type` フィールドを検出して TransactionCard のレンダリングを決定する。この型は `src/types/solana.ts` に一元定義し、Frontend と Backend (Mastra tools) の両方からインポートする。
+Mastra ツールの返却値に `type: "solana_tx_request"` の discriminated union を使用する。Frontend はこの `type` フィールドを検出して TransactionCard のレンダリングを決定する。この型は `src/types/solana.ts` に一元定義する。
+
+**重要**: Mastra ツール（`src/mastra/tools/solana/`）からこの型をインポートする際は、Vite の `@` エイリアス（`@/types/solana`）を **使用しない**。`mastra build` は Vite のエイリアス解決を行わないためビルドエラーになる。代わりに相対パスを使用する:
+
+```typescript
+// Mastra ツール側（正しい）
+import type { SolanaTxRequest } from "../../types/solana";
+
+// React フロントエンド側（どちらも可）
+import type { SolanaTxRequest } from "@/types/solana";
+// または
+import type { SolanaTxRequest } from "../types/solana";
+```
 
 **環境変数コントラクト**
 
