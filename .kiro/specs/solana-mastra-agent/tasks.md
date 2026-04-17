@@ -2,7 +2,7 @@
 
 ## Task 1. 基盤セットアップ
 
-- [ ] 1.1 Solana 共有型定義ファイルの作成
+- [x] 1.1 Solana 共有型定義ファイルの作成
   - `SolanaTxRequest`（discriminated union）、`SolanaError`、`NFTAsset`、`TransactionSignResult` など、Frontend と Mastra ツール間で共有する型をひとつのファイルに定義する
   - Mastra ツールからは Vite `@` エイリアスを使わず相対パスでインポートできるよう、ファイルの配置場所を設計書の規約に従って決定する
   - Zod スキーマと TypeScript 型の両方を定義し、ツール入力バリデーションに再利用できるようにする
