@@ -1,5 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
+import { airdropTool } from "../tools/airdrop-tool";
+import { callProgramTool } from "../tools/call-program-tool";
 import { getBalanceTool } from "../tools/get-balance-tool";
 import { jupiterSwapTool } from "../tools/jupiter-swap-tool";
 import { getNftsTool, mintNftTool } from "../tools/nft-tools";
@@ -98,6 +100,8 @@ export const solanaAgent = new Agent({
     getNftsTool,
     mintNftTool,
     jupiterSwapTool,
+    airdropTool,
+    callProgramTool,
   },
   memory: new Memory(),
 });
