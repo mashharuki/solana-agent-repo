@@ -77,7 +77,7 @@
   - Mastra インスタンスの agents 登録を更新する
   - _Requirements: 5.6, 5.8, 2.7_
 
-- [ ] 4.2 Mastra ストレージと Vercel デプロイ設定の更新
+- [x] 4.2 Mastra ストレージと Vercel デプロイ設定の更新
   - LibSQL ストレージの URL を環境変数から読み込み、開発時はローカルファイル、本番は Turso Cloud URL を使用できるようにする
   - `VercelDeployer` を Mastra インスタンスに追加し、`mastra build` コマンドで Vercel 向けのビルドが通ることを確認する
   - Vercel 本番では DuckDB が使用できないため、Observability の Exporter を環境に応じて切り替える設定を加える
