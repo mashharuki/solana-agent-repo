@@ -1,6 +1,9 @@
 import { getValidatedRpcUrl } from "@/lib/solana-utils";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { ConnectionProvider, WalletProvider } from "@solana/wallet-adapter-react";
+import {
+  ConnectionProvider,
+  WalletProvider,
+} from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { useMemo, type ReactNode } from "react";
@@ -44,9 +47,7 @@ export function SolanaProvider({ children }: SolanaProviderProps) {
           textAlign: "center",
         }}
       >
-        <h2 style={{ margin: 0, fontSize: "1.25rem" }}>
-          環境変数エラー
-        </h2>
+        <h2 style={{ margin: 0, fontSize: "1.25rem" }}>環境変数エラー</h2>
         <p style={{ margin: 0, fontSize: "0.9rem", color: "#aaa" }}>
           {envError}
         </p>

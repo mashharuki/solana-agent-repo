@@ -11,7 +11,9 @@ interface RpcEnv {
  * テスト可能にするため env オブジェクトを引数として受け取り、
  * デフォルトは import.meta.env を使用する。
  */
-export function getValidatedRpcUrl(env: RpcEnv = import.meta.env as RpcEnv): string {
+export function getValidatedRpcUrl(
+  env: RpcEnv = import.meta.env as RpcEnv,
+): string {
   const rpcUrl = env.VITE_SOLANA_RPC_URL;
   if (!rpcUrl) {
     throw new Error(

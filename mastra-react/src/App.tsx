@@ -1,24 +1,24 @@
 import {
-    Conversation,
-    ConversationContent,
-    ConversationScrollButton,
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
 import {
-    Message,
-    MessageContent,
-    MessageResponse,
+  Message,
+  MessageContent,
+  MessageResponse,
 } from "@/components/ai-elements/message";
 import {
-    PromptInput,
-    PromptInputBody,
-    PromptInputTextarea,
+  PromptInput,
+  PromptInputBody,
+  PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import {
-    Tool,
-    ToolContent,
-    ToolHeader,
-    ToolInput,
-    ToolOutput,
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
 } from "@/components/ai-elements/tool";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type ToolUIPart } from "ai";

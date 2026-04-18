@@ -5,10 +5,10 @@ import { DuckDBStore } from "@mastra/duckdb";
 import { LibSQLStore } from "@mastra/libsql";
 import { PinoLogger } from "@mastra/loggers";
 import {
-    CloudExporter,
-    DefaultExporter,
-    Observability,
-    SensitiveDataFilter,
+  CloudExporter,
+  DefaultExporter,
+  Observability,
+  SensitiveDataFilter,
 } from "@mastra/observability";
 import { weatherAgent } from "./agents/weather-agent";
 import { weatherWorkflow } from "./workflows/weather-workflow";

@@ -1,8 +1,9 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 
+// Viteの設定
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -10,6 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // 開発サーバーのプロキシ設定
   server: {
     proxy: {
       "/api": {
@@ -18,6 +20,7 @@ export default defineConfig({
       },
     },
   },
+  // テスト設定
   test: {
     globals: true,
     environment: "node",
