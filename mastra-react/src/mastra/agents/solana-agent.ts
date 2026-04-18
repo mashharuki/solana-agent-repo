@@ -1,6 +1,8 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
 import { getBalanceTool } from "../tools/get-balance-tool";
+import { jupiterSwapTool } from "../tools/jupiter-swap-tool";
+import { getNftsTool, mintNftTool } from "../tools/nft-tools";
 import { transferSolTool } from "../tools/transfer-sol-tool";
 
 export const SOLANA_AGENT_ID = "solana-agent" as const;
@@ -90,6 +92,12 @@ export const solanaAgent = new Agent({
   name: "Solana AI Agent",
   instructions: SOLANA_AGENT_INSTRUCTIONS,
   model: "google/gemini-3-flash-preview",
-  tools: { getBalanceTool, transferSolTool },
+  tools: {
+    getBalanceTool,
+    transferSolTool,
+    getNftsTool,
+    mintNftTool,
+    jupiterSwapTool,
+  },
   memory: new Memory(),
 });

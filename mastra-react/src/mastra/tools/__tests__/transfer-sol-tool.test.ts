@@ -71,17 +71,32 @@ describe("TransferSolInputSchema", () => {
 
 describe("buildTransferTransaction", () => {
   it('returns SolanaTxRequest with type "solana_tx_request"', async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     expect(result.type).toBe("solana_tx_request");
   });
 
   it('returns txType "transfer"', async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     expect(result.txType).toBe("transfer");
   });
 
   it("returns a non-empty base64 serializedTx", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     expect(typeof result.serializedTx).toBe("string");
     expect(result.serializedTx.length).toBeGreaterThan(0);
     // Base64 characters only
@@ -89,12 +104,22 @@ describe("buildTransferTransaction", () => {
   });
 
   it("description includes the transfer amount", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.5, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.5,
+      makeDeps(1_000_000_000),
+    );
     expect(result.description).toContain("0.5");
   });
 
   it("description includes a truncated destination address", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     // TO starts with "Toke" and ends with "Q5DA"
     expect(result.description).toMatch(/Toke|Q5DA/);
   });
@@ -108,9 +133,9 @@ describe("buildTransferTransaction", () => {
 
   it("throws INSUFFICIENT_BALANCE with current and required amounts", async () => {
     const deps = makeDeps(0);
-    await expect(
-      buildTransferTransaction(FROM, TO, 1, deps),
-    ).rejects.toThrow(/0\.0000.*SOL|0 SOL/i);
+    await expect(buildTransferTransaction(FROM, TO, 1, deps)).rejects.toThrow(
+      /0\.0000.*SOL|0 SOL/i,
+    );
   });
 
   it("succeeds when balance exactly equals required lamports", async () => {

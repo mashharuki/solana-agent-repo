@@ -43,9 +43,7 @@ export async function buildTransferTransaction(
   const blockhash = await deps.getRecentBlockhashFn();
 
   const transaction = new Transaction();
-  transaction.add(
-    SystemProgram.transfer({ fromPubkey, toPubkey, lamports }),
-  );
+  transaction.add(SystemProgram.transfer({ fromPubkey, toPubkey, lamports }));
   transaction.recentBlockhash = blockhash;
   transaction.feePayer = fromPubkey;
 
@@ -56,7 +54,12 @@ export async function buildTransferTransaction(
   const toShort = `${toAddress.slice(0, 4)}...${toAddress.slice(-4)}`;
   const description = `${amountSol} SOL を ${toShort} に送金`;
 
-  return { type: "solana_tx_request", serializedTx, description, txType: "transfer" };
+  return {
+    type: "solana_tx_request",
+    serializedTx,
+    description,
+    txType: "transfer",
+  };
 }
 
 /**
