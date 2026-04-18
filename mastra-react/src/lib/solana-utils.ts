@@ -2,6 +2,19 @@
  * 環境変数から Solana RPC URL を取得して検証するユーティリティ
  */
 
+export type SolanaNetwork = "devnet" | "mainnet-beta" | "testnet" | "unknown";
+
+const GENESIS_HASHES: Record<string, SolanaNetwork> = {
+  EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG: "devnet",
+  "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d": "mainnet-beta",
+  "4uhcVJyU9pJkvQyS88uRDiswHXSCkY3zQawwpjk2NsNY": "testnet",
+};
+
+/** ジェネシスハッシュから Solana ネットワーク名を返す純関数 */
+export function detectSolanaNetwork(genesisHash: string): SolanaNetwork {
+  return GENESIS_HASHES[genesisHash] ?? "unknown";
+}
+
 interface RpcEnv {
   VITE_SOLANA_RPC_URL?: string;
 }

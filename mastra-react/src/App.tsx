@@ -1,3 +1,4 @@
+import { NetworkMismatchBanner } from "@/components/wallet/NetworkMismatchBanner";
 import { WalletStatusBar } from "@/components/wallet/WalletStatusBar";
 import {
   Conversation,
@@ -53,64 +54,67 @@ export default function App() {
   return (
     <div className="relative flex h-screen flex-col bg-[#0f0f13]">
       <WalletStatusBar />
-    <div className="mx-auto size-full max-w-4xl flex-1 p-6">
-      <div className="flex h-full flex-col">
-        <Conversation className="h-full">
-          <ConversationContent>
-            {messages.map((message) => (
-              <div key={message.id}>
-                {message.parts?.map((part, i) => {
-                  if (part.type === "text") {
-                    return (
-                      <Message key={`${message.id}-${i}`} from={message.role}>
-                        <MessageContent>
-                          <MessageResponse>{part.text}</MessageResponse>
-                        </MessageContent>
-                      </Message>
-                    );
-                  }
+      <NetworkMismatchBanner />
+      <div className="mx-auto size-full max-w-4xl flex-1 p-6">
+        <div className="flex h-full flex-col">
+          <Conversation className="h-full">
+            <ConversationContent>
+              {messages.map((message) => (
+                <div key={message.id}>
+                  {message.parts?.map((part, i) => {
+                    if (part.type === "text") {
+                      return (
+                        <Message key={`${message.id}-${i}`} from={message.role}>
+                          <MessageContent>
+                            <MessageResponse>{part.text}</MessageResponse>
+                          </MessageContent>
+                        </Message>
+                      );
+                    }
 
-                  if (part.type?.startsWith("tool-")) {
-                    return (
-                      <Tool key={`${message.id}-${i}`}>
-                        <ToolHeader
-                          type={(part as ToolUIPart).type}
-                          state={
-                            (part as ToolUIPart).state || "output-available"
-                          }
-                          className="cursor-pointer"
-                        />
-                        <ToolContent>
-                          <ToolInput input={(part as ToolUIPart).input || {}} />
-                          <ToolOutput
-                            output={(part as ToolUIPart).output}
-                            errorText={(part as ToolUIPart).errorText}
+                    if (part.type?.startsWith("tool-")) {
+                      return (
+                        <Tool key={`${message.id}-${i}`}>
+                          <ToolHeader
+                            type={(part as ToolUIPart).type}
+                            state={
+                              (part as ToolUIPart).state || "output-available"
+                            }
+                            className="cursor-pointer"
                           />
-                        </ToolContent>
-                      </Tool>
-                    );
-                  }
+                          <ToolContent>
+                            <ToolInput
+                              input={(part as ToolUIPart).input || {}}
+                            />
+                            <ToolOutput
+                              output={(part as ToolUIPart).output}
+                              errorText={(part as ToolUIPart).errorText}
+                            />
+                          </ToolContent>
+                        </Tool>
+                      );
+                    }
 
-                  return null;
-                })}
-              </div>
-            ))}
-            <ConversationScrollButton />
-          </ConversationContent>
-        </Conversation>
-        <PromptInput onSubmit={handleSubmit} className="mt-20">
-          <PromptInputBody>
-            <PromptInputTextarea
-              onChange={(e) => setInput(e.target.value)}
-              className="md:leading-10"
-              value={input}
-              placeholder="Ask about the weather..."
-              disabled={status !== "ready"}
-            />
-          </PromptInputBody>
-        </PromptInput>
+                    return null;
+                  })}
+                </div>
+              ))}
+              <ConversationScrollButton />
+            </ConversationContent>
+          </Conversation>
+          <PromptInput onSubmit={handleSubmit} className="mt-20">
+            <PromptInputBody>
+              <PromptInputTextarea
+                onChange={(e) => setInput(e.target.value)}
+                className="md:leading-10"
+                value={input}
+                placeholder="Ask about the weather..."
+                disabled={status !== "ready"}
+              />
+            </PromptInputBody>
+          </PromptInput>
+        </div>
       </div>
-    </div>
     </div>
   );
 }
