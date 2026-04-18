@@ -5,6 +5,8 @@ import "./css/index.css";
 import { WalletGate } from "./components/wallet/WalletGate.tsx";
 import { SolanaProvider } from "./providers/SolanaProvider.tsx";
 
+document.documentElement.classList.add("dark");
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <SolanaProvider>

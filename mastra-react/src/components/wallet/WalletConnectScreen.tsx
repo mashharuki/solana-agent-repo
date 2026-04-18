@@ -51,22 +51,16 @@ export function WalletConnectScreen() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f0f13]">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background">
       {/* Solana ブランドロゴエリア */}
       <div className="mb-10 flex flex-col items-center gap-3">
         <div
-          className="h-16 w-16 rounded-full"
-          style={{
-            background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
-          }}
+          className="h-16 w-16 rounded-full bg-solana-gradient"
         />
-        <h1
-          className="text-2xl font-semibold tracking-tight text-white"
-          style={{ fontFamily: "Inter, sans-serif" }}
-        >
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Solana AI Agent
         </h1>
-        <p className="text-sm text-[#888]">
+        <p className="text-sm text-muted-foreground">
           Devnet · Phantom ウォレットで接続してください
         </p>
       </div>
@@ -75,17 +69,17 @@ export function WalletConnectScreen() {
       {displayState.status === "connecting" ? (
         <div className="flex flex-col items-center gap-4">
           <div
-            className="h-10 w-10 animate-spin rounded-full border-4 border-[#9945FF] border-t-transparent"
+            className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent"
             role="status"
             aria-label="接続中"
           />
-          <p className="text-sm text-[#888]">ウォレットに接続中...</p>
+          <p className="text-sm text-muted-foreground">ウォレットに接続中...</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4">
           {/* エラーメッセージ */}
           {displayState.status === "error" && (
-            <div className="mb-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <div className="mb-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
               {displayState.message}
             </div>
           )}
@@ -94,11 +88,7 @@ export function WalletConnectScreen() {
           <button
             type="button"
             onClick={handleConnect}
-            className="rounded-xl px-8 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
-            style={{
-              background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
-              minWidth: "200px",
-            }}
+            className="min-w-[200px] rounded-xl bg-solana-gradient px-8 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
           >
             {displayState.status === "error" ? "再接続する" : "Phantom で接続"}
           </button>

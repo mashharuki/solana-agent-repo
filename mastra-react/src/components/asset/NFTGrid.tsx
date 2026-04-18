@@ -16,8 +16,7 @@ export function NFTGrid({ nfts, isLoading }: NFTGridProps) {
     return (
       <div className="flex items-center justify-center py-6">
         <div
-          className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-          style={{ borderColor: "#9945FF", borderTopColor: "transparent" }}
+          className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"
           role="status"
           aria-label="NFT読み込み中"
         />
@@ -27,7 +26,7 @@ export function NFTGrid({ nfts, isLoading }: NFTGridProps) {
 
   if (nfts.length === 0) {
     return (
-      <p className="py-4 text-center text-xs" style={{ color: "#555" }}>
+      <p className="py-4 text-center text-xs text-muted-foreground">
         NFT が見つかりません
       </p>
     );
@@ -38,8 +37,7 @@ export function NFTGrid({ nfts, isLoading }: NFTGridProps) {
       {nfts.map((nft) => (
         <div
           key={nft.id}
-          className="overflow-hidden rounded-lg"
-          style={{ background: "rgba(153, 69, 255, 0.08)" }}
+          className="overflow-hidden rounded-lg bg-primary/8"
           title={nft.name}
         >
           {nft.imageUrl ? (
@@ -51,15 +49,14 @@ export function NFTGrid({ nfts, isLoading }: NFTGridProps) {
             />
           ) : (
             <div
-              className="flex aspect-square w-full items-center justify-center"
-              style={{ background: "rgba(153, 69, 255, 0.15)" }}
+              className="flex aspect-square w-full items-center justify-center bg-primary/15"
               aria-label={nft.name}
             >
               <span className="text-lg">🖼</span>
             </div>
           )}
           <p
-            className="truncate px-1.5 py-1 text-center text-xs text-white"
+            className="truncate px-1.5 py-1 text-center text-xs text-foreground"
             title={nft.name}
           >
             {nft.name}

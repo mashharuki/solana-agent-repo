@@ -162,13 +162,13 @@
 
 ## Task 8. Solana デザインテーマの実装
 
-- [ ] 8.1 (P) CSS カスタムプロパティの Solana ブランドカラーへの更新
+- [x] 8.1 (P) CSS カスタムプロパティの Solana ブランドカラーへの更新
   - 既存の CSS Custom Properties（`:root` と `.dark`）を Solana 公式ブランドのグラデーション（パープル `#9945FF`・グリーン `#14F195`・シアン系）をベースにした配色に全面更新する
   - primary・secondary・accent・background など主要なデザイントークンを Solana ブランドに合わせて定義する
   - Apple Human Interface Guidelines に準拠した余白スケールとタイポグラフィスケールを Tailwind テーマに設定する
   - _Requirements: 6.1, 6.2_
 
-- [ ] 8.2 (P) チャット UI の独自デザイン実装
+- [x] 8.2 (P) チャット UI の独自デザイン実装
   - 既存の Conversation・Message・PromptInput コンポーネントに Solana テーマのスタイルを適用し、汎用的な「AI チャットツール」に見えないデザインにする
   - 文言・アイコン・レイアウトから生成 AI ツールらしさを排除し、Solana ブロックチェーンアプリとしての独自 UX を表現する
   - モバイルとデスクトップの両方で適切に表示されるレスポンシブレイアウトを確認する

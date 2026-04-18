@@ -14,26 +14,11 @@ export function WalletStatusBar() {
   const displayAddress = publicKey ? truncateAddress(publicKey.toBase58()) : "";
 
   return (
-    <header
-      className="flex items-center justify-between px-5 py-3"
-      style={{
-        background: "rgba(15, 15, 19, 0.85)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "1px solid rgba(153, 69, 255, 0.2)",
-      }}
-    >
+    <header className="flex items-center justify-between border-b border-primary/20 bg-background/85 px-5 py-3 backdrop-blur-md">
       {/* ブランドロゴ */}
       <div className="flex items-center gap-2">
-        <div
-          className="h-6 w-6 rounded-full"
-          style={{
-            background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
-          }}
-        />
-        <span
-          className="text-sm font-semibold text-white"
-          style={{ fontFamily: "Inter, sans-serif" }}
-        >
+        <div className="h-6 w-6 rounded-full bg-solana-gradient" />
+        <span className="text-sm font-semibold text-foreground">
           Solana AI Agent
         </span>
       </div>
@@ -41,22 +26,14 @@ export function WalletStatusBar() {
       {/* 右側: DevNet バッジ + アドレス + 切断ボタン */}
       <div className="flex items-center gap-3">
         {/* DevNet バッジ */}
-        <span
-          className="rounded-full px-2.5 py-0.5 text-xs font-medium"
-          style={{
-            background: "rgba(20, 241, 149, 0.12)",
-            color: "#14F195",
-            border: "1px solid rgba(20, 241, 149, 0.3)",
-          }}
-        >
+        <span className="rounded-full border border-accent/30 bg-accent/12 px-2.5 py-0.5 text-xs font-medium text-accent">
           DevNet
         </span>
 
         {/* ウォレットアドレス */}
         {displayAddress && (
           <span
-            className="rounded-lg px-3 py-1 font-mono text-xs text-white"
-            style={{ background: "rgba(153, 69, 255, 0.15)" }}
+            className="rounded-lg bg-primary/15 px-3 py-1 font-mono text-xs text-foreground"
             title={publicKey?.toBase58()}
           >
             {displayAddress}
@@ -67,7 +44,7 @@ export function WalletStatusBar() {
         <button
           type="button"
           onClick={() => disconnect()}
-          className="rounded-lg px-3 py-1 text-xs font-medium text-[#888] transition-colors hover:bg-white/5 hover:text-white"
+          className="rounded-lg px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
         >
           切断
         </button>

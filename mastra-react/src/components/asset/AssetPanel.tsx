@@ -14,35 +14,22 @@ export function AssetPanel() {
   const { nfts, isLoading: nftsLoading } = useNFTs();
 
   return (
-    <aside
-      className="flex w-56 shrink-0 flex-col gap-4 overflow-y-auto rounded-2xl p-4"
-      style={{
-        background: "rgba(153, 69, 255, 0.06)",
-        border: "1px solid rgba(153, 69, 255, 0.18)",
-      }}
-    >
+    <aside className="flex w-56 shrink-0 flex-col gap-4 overflow-y-auto rounded-2xl border border-primary/18 bg-primary/6 p-4">
       {/* SOL 残高セクション */}
       <section>
-        <h2
-          className="mb-1.5 text-xs font-semibold uppercase tracking-widest"
-          style={{ color: "#9945FF" }}
-        >
+        <h2 className="mb-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
           残高
         </h2>
 
         {balanceLoading ? (
           <div
-            className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-            style={{ borderColor: "#14F195", borderTopColor: "transparent" }}
+            className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-transparent"
             role="status"
             aria-label="残高読み込み中"
           />
         ) : (
           <p
-            className="font-mono text-xl font-bold"
-            style={{
-              color: solBalance === null ? "#555" : "#14F195",
-            }}
+            className={`font-mono text-xl font-bold ${solBalance === null ? "text-muted-foreground" : "text-accent"}`}
             aria-label="SOL残高"
           >
             {formatSolBalance(solBalance)}
@@ -50,24 +37,18 @@ export function AssetPanel() {
         )}
 
         {solBalance === 0 && !balanceLoading && (
-          <p className="mt-0.5 text-xs" style={{ color: "#666" }}>
+          <p className="mt-0.5 text-xs text-muted-foreground">
             残高ゼロ — DevNet エアドロップをお試しください
           </p>
         )}
       </section>
 
       {/* セパレーター */}
-      <div
-        className="h-px w-full"
-        style={{ background: "rgba(153, 69, 255, 0.15)" }}
-      />
+      <div className="h-px w-full bg-primary/15" />
 
       {/* NFT セクション */}
       <section>
-        <h2
-          className="mb-2 text-xs font-semibold uppercase tracking-widest"
-          style={{ color: "#9945FF" }}
-        >
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
           NFT
         </h2>
         <NFTGrid nfts={nfts} isLoading={nftsLoading} />

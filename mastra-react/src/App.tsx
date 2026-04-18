@@ -82,11 +82,13 @@ export default function App() {
   }, [refetchBalance]);
 
   return (
-    <div className="relative flex h-screen flex-col bg-[#0f0f13]">
+    <div className="relative flex h-screen flex-col bg-background">
       <WalletStatusBar />
       <NetworkMismatchBanner />
-      <div className="mx-auto flex size-full max-w-6xl flex-1 gap-4 overflow-hidden p-6">
-        <AssetPanel />
+      <div className="mx-auto flex size-full max-w-6xl flex-1 gap-4 overflow-hidden p-4 lg:p-6">
+        <div className="hidden lg:flex">
+          <AssetPanel />
+        </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <Conversation className="h-full">
             <ConversationContent>
@@ -158,17 +160,14 @@ export default function App() {
 
           {/* ウォレット未接続の案内 */}
           {!connected && (
-            <p className="mb-2 text-center text-xs" style={{ color: "#666" }}>
+            <p className="mb-2 text-center text-xs text-muted-foreground">
               Phantom ウォレットを接続するとチャットが利用できます
             </p>
           )}
 
           {/* 署名待ち案内 */}
           {pendingTxRequest !== null && (
-            <p
-              className="mb-2 text-center text-xs"
-              style={{ color: "#9945FF" }}
-            >
+            <p className="mb-2 text-center text-xs text-primary">
               トランザクションへの署名を完了するまでメッセージは送信できません
             </p>
           )}

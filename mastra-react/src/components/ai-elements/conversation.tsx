@@ -42,8 +42,8 @@ export type ConversationEmptyStateProps = ComponentProps<"div"> & {
 
 export const ConversationEmptyState = ({
   className,
-  title = "No messages yet",
-  description = "Start a conversation to see messages here",
+  title = "Solana AI Agent",
+  description = "Phantom ウォレットを接続して、ブロックチェーンを日本語で操作しましょう",
   icon,
   children,
   ...props
@@ -57,9 +57,18 @@ export const ConversationEmptyState = ({
   >
     {children ?? (
       <>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
-        <div className="space-y-1">
-          <h3 className="font-medium text-sm">{title}</h3>
+        {icon ? (
+          <div className="text-primary">{icon}</div>
+        ) : (
+          <div
+            className="mb-1 h-12 w-12 rounded-full"
+            style={{
+              background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
+            }}
+          />
+        )}
+        <div className="space-y-1.5">
+          <h3 className="font-semibold text-base text-foreground">{title}</h3>
           {description && (
             <p className="text-muted-foreground text-sm">{description}</p>
           )}
