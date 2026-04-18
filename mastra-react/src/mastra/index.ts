@@ -10,15 +10,13 @@ import {
   Observability,
   SensitiveDataFilter,
 } from "@mastra/observability";
-import { weatherAgent } from "./agents/weather-agent";
-import { weatherWorkflow } from "./workflows/weather-workflow";
+import { solanaAgent } from "./agents/solana-agent";
 
 /**
  * Mastra インスタンス
  */
 export const mastra = new Mastra({
-  workflows: { weatherWorkflow },
-  agents: { weatherAgent },
+  agents: { solanaAgent },
   server: {
     apiRoutes: [
       chatRoute({

@@ -70,7 +70,7 @@
 
 ## Task 4. Mastra Solana エージェントの基盤
 
-- [ ] 4.1 solanaAgent の定義と既存エージェントの置き換え
+- [x] 4.1 solanaAgent の定義と既存エージェントの置き換え
   - weatherAgent を削除し、Solana 専用エージェントを新たに定義する
   - エージェントの System Prompt に Solana DevNet の操作説明・日本語での応答指示・絶対にトランザクションを自己署名しない旨を丁寧かつ詳細に記述する
   - エージェント ID を `solana-agent` に設定し、chatRoute のエンドポイントと一致させる
