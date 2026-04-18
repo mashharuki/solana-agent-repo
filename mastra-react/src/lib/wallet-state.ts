@@ -24,6 +24,14 @@ export type WalletDisplayState =
   | { status: "error"; message: string };
 
 /**
+ * WalletGate のレンダリング分岐を決定する純関数。
+ * connected=true → アプリ画面、false → 接続画面。
+ */
+export function selectWalletGateView(connected: boolean): "connect" | "app" {
+  return connected ? "app" : "connect";
+}
+
+/**
  * ウォレット接続の raw 状態を UI 表示用の状態へ変換する純関数。
  * 優先順位: connected > connecting > error > disconnected
  */
