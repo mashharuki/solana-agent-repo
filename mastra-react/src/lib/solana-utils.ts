@@ -19,6 +19,10 @@ interface RpcEnv {
   VITE_SOLANA_RPC_URL?: string;
 }
 
+interface FrontendEnv extends RpcEnv {
+  VITE_SOLANA_NETWORK?: string;
+}
+
 /**
  * VITE_SOLANA_RPC_URL 環境変数を検証して返す。
  * テスト可能にするため env オブジェクトを引数として受け取り、
@@ -34,4 +38,22 @@ export function getValidatedRpcUrl(
     );
   }
   return rpcUrl;
+}
+
+/**
+ * フロントエンドに必要な全環境変数を検証する。
+ * 未設定の必須変数がある場合はエラーをスローする。
+ */
+export function validateFrontendEnvVars(
+  env: FrontendEnv = import.meta.env as FrontendEnv,
+): void {
+  const missing: string[] = [];
+  if (!env.VITE_SOLANA_RPC_URL) missing.push("VITE_SOLANA_RPC_URL");
+  if (!env.VITE_SOLANA_NETWORK) missing.push("VITE_SOLANA_NETWORK");
+
+  if (missing.length > 0) {
+    throw new Error(
+      `必須環境変数が設定されていません: ${missing.join(", ")}。.env ファイルを確認してください。`,
+    );
+  }
 }

@@ -1,4 +1,4 @@
-import { getValidatedRpcUrl } from "@/lib/solana-utils";
+import { getValidatedRpcUrl, validateFrontendEnvVars } from "@/lib/solana-utils";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import {
   ConnectionProvider,
@@ -23,6 +23,7 @@ export function SolanaProvider({ children }: SolanaProviderProps) {
   let envError: string | null = null;
 
   try {
+    validateFrontendEnvVars();
     rpcUrl = getValidatedRpcUrl();
   } catch (error) {
     envError = (error as Error).message;
