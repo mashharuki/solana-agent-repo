@@ -14,7 +14,7 @@
   - `bun dev` でフロントエンドと Mastra サーバーを同時起動する手順を確認する
   - _Requirements: 8.3, 8.5_
 
-- [ ] 1.3 Solana 関連パッケージの追加
+- [x] 1.3 Solana 関連パッケージの追加
   - `@solana/web3.js`、`@solana/wallet-adapter-react`、`@solana/wallet-adapter-phantom`、`@solana/wallet-adapter-react-ui`、`@solana/wallet-adapter-base` を追加する
   - `@metaplex-foundation/umi`、`@metaplex-foundation/digital-asset-standard-api` を追加する
   - `@mastra/deployer-vercel` を追加する
