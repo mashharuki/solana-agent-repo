@@ -57,7 +57,9 @@ export function TransactionCard({
 
     try {
       let tx: Transaction | VersionedTransaction;
-      const bytes = Buffer.from(txRequest.serializedTx, "base64");
+      const bytes = Uint8Array.from(atob(txRequest.serializedTx), (c) =>
+        c.charCodeAt(0),
+      );
 
       try {
         tx = VersionedTransaction.deserialize(bytes);

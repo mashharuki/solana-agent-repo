@@ -14,7 +14,7 @@ export default defineConfig({
   // 開発サーバーのプロキシ設定
   server: {
     proxy: {
-      "/api": {
+      "/chat": {
         target: "http://localhost:4111",
         changeOrigin: true,
       },
