@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  SOLANA_AGENT_ID,
-  SOLANA_AGENT_INSTRUCTIONS,
-} from "../solana-agent";
+import { SOLANA_AGENT_ID, SOLANA_AGENT_INSTRUCTIONS } from "../solana-agent";
 
 describe("SOLANA_AGENT_ID", () => {
   it('equals "solana-agent"', () => {

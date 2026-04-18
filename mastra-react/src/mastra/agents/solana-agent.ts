@@ -1,5 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
+import { getBalanceTool } from "../tools/get-balance-tool";
+import { transferSolTool } from "../tools/transfer-sol-tool";
 
 export const SOLANA_AGENT_ID = "solana-agent" as const;
 
@@ -88,6 +90,6 @@ export const solanaAgent = new Agent({
   name: "Solana AI Agent",
   instructions: SOLANA_AGENT_INSTRUCTIONS,
   model: "google/gemini-3-flash-preview",
-  tools: {},
+  tools: { getBalanceTool, transferSolTool },
   memory: new Memory(),
 });

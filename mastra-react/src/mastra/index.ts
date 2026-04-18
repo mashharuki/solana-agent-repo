@@ -45,10 +45,7 @@ const storage = isProduction
  */
 const exporters = isProduction
   ? [new CloudExporter()]
-  : [
-      new DefaultExporter(),
-      new CloudExporter(),
-    ];
+  : [new DefaultExporter(), new CloudExporter()];
 
 /**
  * Mastra インスタンス
@@ -72,9 +69,7 @@ export const mastra = new Mastra({
       default: {
         serviceName: "mastra",
         exporters,
-        spanOutputProcessors: [
-          new SensitiveDataFilter(),
-        ],
+        spanOutputProcessors: [new SensitiveDataFilter()],
       },
     },
   }),
