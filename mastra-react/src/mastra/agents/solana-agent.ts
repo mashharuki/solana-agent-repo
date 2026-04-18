@@ -6,6 +6,7 @@ import { getBalanceTool } from "../tools/get-balance-tool";
 import { jupiterSwapTool } from "../tools/jupiter-swap-tool";
 import { getNftsTool, mintNftTool } from "../tools/nft-tools";
 import { transferSolTool } from "../tools/transfer-sol-tool";
+import { solanaWorkspace } from "../workspace";
 
 export const SOLANA_AGENT_ID = "solana-agent" as const;
 
@@ -104,4 +105,5 @@ export const solanaAgent = new Agent({
     callProgramTool,
   },
   memory: new Memory(),
+  workspace: solanaWorkspace,
 });

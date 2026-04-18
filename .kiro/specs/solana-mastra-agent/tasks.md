@@ -119,7 +119,7 @@
   - ツールの `description` に汎用 Program 呼び出しの概念・使用例を詳しく記述する
   - _Requirements: 5.5, 5.6_
 
-- [ ] 5.7 Solana Agent SKILL の workspace 統合
+- [x] 5.7 Solana Agent SKILL の workspace 統合
   - Mastra の workspace 機能を使って Solana Agent SKILL をエージェントに統合する
   - SKILL が提供する追加ツールや知識がエージェントから利用できることを確認する
   - _Requirements: 5.7_
