@@ -148,13 +148,13 @@
 
 ## Task 7. チャット UI と Agent 統合
 
-- [ ] 7.1 メインチャット画面の Solana Agent 統合
+- [x] 7.1 メインチャット画面の Solana Agent 統合
   - 既存の App.tsx を Solana Agent エンドポイント（`/api/chat/solana-agent`）に接続したチャット画面に置き換える
   - ウォレット未接続状態ではメッセージ送信をブロックし、接続を促すメッセージを表示する
   - Agent 応答のストリーミング表示、ローディングインジケーター、エラーメッセージのチャット内表示を実装する
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 7.2 ToolResult からの TransactionCard 検出レンダリング
+- [x] 7.2 ToolResult からの TransactionCard 検出レンダリング
   - チャットメッセージのパーツを走査し、ツール実行結果に `type: "solana_tx_request"` が含まれる場合に TransactionCard をレンダリングするロジックを実装する
   - すでに署名待ちのトランザクションが存在する場合、後続の tx リクエストは無視して Agent にその旨を通知する
   - Solana 情報取得（残高・NFT 等）のツール結果はそのままテキスト形式で表示する
