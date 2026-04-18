@@ -23,7 +23,7 @@
 
 ## Task 2. ウォレット接続レイヤー
 
-- [ ] 2.1 Solana Wallet Adapter Provider の統合
+- [x] 2.1 Solana Wallet Adapter Provider の統合
   - アプリのエントリポイントに ConnectionProvider・WalletProvider・WalletModalProvider の 3 層を追加し、DevNet RPC URL を環境変数から読み込む
   - `autoConnect: true` を設定し、ページリロード後もウォレット接続が維持されるようにする
   - 環境変数 `VITE_SOLANA_RPC_URL` が未設定の場合に起動時エラーを表示する仕組みを加える
