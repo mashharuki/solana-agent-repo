@@ -1,6 +1,6 @@
 import { getWalletDisplayState } from "@/lib/wallet-state";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * ウォレット未接続時に表示する接続画面。
@@ -12,14 +12,13 @@ import { useEffect, useState } from "react";
 export function WalletConnectScreen() {
   const { connecting, connect, select, wallet, wallets } = useWallet();
   const [localError, setLocalError] = useState<string | null>(null);
-  // select() は React state 更新をスケジュールするだけなので、
-  // 同一コール内で connect() を呼ぶと WalletNotSelectedError になる。
-  // このフラグで「選択完了後に接続」を useEffect へ委譲する。
-  const [pendingConnect, setPendingConnect] = useState(false);
+  // select() の反映後にだけ connect() を呼ぶためのフラグ。
+  // useRef なので useEffect 内で更新しても再レンダーを発生させない。
+  const pendingConnectRef = useRef(false);
 
   useEffect(() => {
-    if (!pendingConnect || !wallet) return;
-    setPendingConnect(false);
+    if (!pendingConnectRef.current || !wallet) return;
+    pendingConnectRef.current = false;
     connect().catch((err: unknown) => {
       const message =
         err instanceof Error
@@ -27,7 +26,7 @@ export function WalletConnectScreen() {
           : "接続に失敗しました。再試行してください。";
       setLocalError(message);
     });
-  }, [pendingConnect, wallet, connect]);
+  }, [wallet, connect]);
 
   const displayState = getWalletDisplayState({
     connected: false,
@@ -43,7 +42,7 @@ export function WalletConnectScreen() {
     if (phantomWallet) {
       select(phantomWallet.adapter.name);
       // wallet state はまだ更新されていないため useEffect 経由で接続する
-      setPendingConnect(true);
+      pendingConnectRef.current = true;
     } else {
       setLocalError(
         "Phantom ウォレットが見つかりません。拡張機能をインストールしてください。",
