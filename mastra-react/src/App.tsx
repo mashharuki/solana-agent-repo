@@ -31,6 +31,7 @@ import type { SolanaTxRequest, TransactionSignResult } from "@/types/solana";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type ToolUIPart } from "ai";
+import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
 
 /**
@@ -82,7 +83,7 @@ export default function App() {
   }, [refetchBalance]);
 
   return (
-    <div className="relative flex h-screen flex-col bg-background">
+    <div className="relative flex h-full flex-col bg-background">
       <WalletStatusBar />
       <NetworkMismatchBanner />
       <div className="mx-auto flex size-full max-w-6xl flex-1 gap-4 overflow-hidden p-4 lg:p-6">
@@ -93,7 +94,12 @@ export default function App() {
           <Conversation className="h-full">
             <ConversationContent>
               {messages.map((message) => (
-                <div key={message.id}>
+                <motion.div
+                  key={message.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                >
                   {message.parts?.map((part, i) => {
                     if (part.type === "text") {
                       return (
@@ -152,8 +158,38 @@ export default function App() {
 
                     return null;
                   })}
-                </div>
+                </motion.div>
               ))}
+
+              {/* Agent 応答待ちタイピングインジケーター */}
+              <AnimatePresence>
+                {(status === "submitted" || status === "streaming") && (
+                  <motion.div
+                    key="typing"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    className="flex items-center gap-1.5 px-1 py-2"
+                    aria-label="Agent が応答中"
+                  >
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="h-2 w-2 rounded-full bg-primary"
+                        animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                        transition={{
+                          duration: 0.7,
+                          repeat: Infinity,
+                          delay: i * 0.15,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <ConversationScrollButton />
             </ConversationContent>
           </Conversation>

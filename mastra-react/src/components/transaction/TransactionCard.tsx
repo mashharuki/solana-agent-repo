@@ -3,6 +3,7 @@ import { formatTxType, getTxTypeLabel } from "@/lib/transaction-utils";
 import type { SolanaTxRequest, TransactionSignResult } from "@/types/solana";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Transaction, VersionedTransaction } from "@solana/web3.js";
+import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type SigningStatus = "idle" | "signing" | "success" | "error";
@@ -103,12 +104,16 @@ export function TransactionCard({
   }, [status, onCancel]);
 
   return (
-    <div
+    <motion.div
       className="my-2 overflow-hidden rounded-2xl"
       style={{
         background: "rgba(153, 69, 255, 0.08)",
         border: "1px solid rgba(153, 69, 255, 0.25)",
       }}
+      initial={{ opacity: 0, y: 16, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 380, damping: 28 }}
     >
       {/* Header */}
       <div
@@ -131,101 +136,121 @@ export function TransactionCard({
 
       {/* Body */}
       <div className="px-4 py-3">
-        <p className="mb-3 text-sm" style={{ color: "#ccc" }}>
+        <p className="mb-3 text-sm text-muted-foreground">
           {txRequest.description}
         </p>
 
-        {status === "idle" && (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleSign}
-              className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
-              style={{
-                background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
-              }}
+        <AnimatePresence mode="wait">
+          {status === "idle" && (
+            <motion.div
+              key="idle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex gap-2"
             >
-              署名・送信
-            </button>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="rounded-xl px-4 py-2.5 text-sm font-medium text-[#888] transition-colors hover:bg-white/5 hover:text-white"
-            >
-              キャンセル
-            </button>
-          </div>
-        )}
-
-        {status === "signing" && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-3 py-1">
-              <div
-                className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-                style={{
-                  borderColor: "#9945FF",
-                  borderTopColor: "transparent",
-                }}
-                role="status"
-                aria-label="署名待ち"
-              />
-              <p className="text-sm" style={{ color: "#9945FF" }}>
-                Phantom で署名してください…
-              </p>
-            </div>
-            <p className="text-xs" style={{ color: "#666" }}>
-              120 秒以内に応答がない場合は自動キャンセルされます。
-            </p>
-          </div>
-        )}
-
-        {status === "success" && (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span style={{ color: "#14F195" }}>✓</span>
-              <p className="text-sm font-semibold" style={{ color: "#14F195" }}>
-                トランザクション送信完了
-              </p>
-            </div>
-            {signature && (
-              <a
-                href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block truncate font-mono text-xs"
-                style={{ color: "#9945FF" }}
-              >
-                {signature}
-              </a>
-            )}
-          </div>
-        )}
-
-        {status === "error" && (
-          <div className="space-y-2">
-            <p className="text-sm" style={{ color: "#f87171" }}>
-              {errorMsg ?? "署名に失敗しました。"}
-            </p>
-            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleSign}
-                className="rounded-xl px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-                style={{ background: "rgba(153, 69, 255, 0.3)" }}
+                className="flex-1 rounded-xl bg-solana-gradient py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
               >
-                再試行
+                署名・送信
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded-xl px-4 py-2 text-sm font-medium text-[#888] transition-colors hover:text-white"
+                className="rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
               >
                 キャンセル
               </button>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+
+          {status === "signing" && (
+            <motion.div
+              key="signing"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="space-y-2"
+            >
+              <div className="flex items-center gap-3 py-1">
+                <div
+                  className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"
+                  role="status"
+                  aria-label="署名待ち"
+                />
+                <p className="text-sm text-primary">
+                  Phantom で署名してください…
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                120 秒以内に応答がない場合は自動キャンセルされます。
+              </p>
+            </motion.div>
+          )}
+
+          {status === "success" && (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className="space-y-2"
+            >
+              <div className="flex items-center gap-2">
+                <span className="text-accent">✓</span>
+                <p className="text-sm font-semibold text-accent">
+                  トランザクション送信完了
+                </p>
+              </div>
+              {signature && (
+                <a
+                  href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block truncate font-mono text-xs text-primary"
+                >
+                  {signature}
+                </a>
+              )}
+            </motion.div>
+          )}
+
+          {status === "error" && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="space-y-2"
+            >
+              <p className="text-sm text-destructive">
+                {errorMsg ?? "署名に失敗しました。"}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleSign}
+                  className="rounded-xl bg-primary/30 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                >
+                  再試行
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  キャンセル
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

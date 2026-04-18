@@ -24,13 +24,19 @@ describe("Solana CSS design tokens", () => {
   });
 
   it("dark mode primary is Solana purple (hue 293)", () => {
-    const darkBlock = css.slice(css.indexOf(".dark {"), css.indexOf(".dark {") + 2000);
+    const darkBlock = css.slice(
+      css.indexOf(".dark {"),
+      css.indexOf(".dark {") + 2000,
+    );
     expect(darkBlock).toContain("--primary:");
     expect(darkBlock).toContain("293");
   });
 
   it("dark mode accent is Solana green (hue 158)", () => {
-    const darkBlock = css.slice(css.indexOf(".dark {"), css.indexOf(".dark {") + 2000);
+    const darkBlock = css.slice(
+      css.indexOf(".dark {"),
+      css.indexOf(".dark {") + 2000,
+    );
     expect(darkBlock).toContain("--accent:");
     expect(darkBlock).toContain("158");
   });
@@ -66,7 +72,7 @@ describe("MessageContent user bubble uses Solana theme", () => {
 
 describe("App layout responsiveness", () => {
   it("does not rely on hardcoded #0f0f13 background", () => {
-    expect(appSrc).not.toContain('bg-[#0f0f13]');
+    expect(appSrc).not.toContain("bg-[#0f0f13]");
   });
 
   it("uses responsive layout classes", () => {

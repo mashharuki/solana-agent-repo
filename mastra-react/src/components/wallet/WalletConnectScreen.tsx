@@ -54,9 +54,7 @@ export function WalletConnectScreen() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
       {/* Solana ブランドロゴエリア */}
       <div className="mb-10 flex flex-col items-center gap-3">
-        <div
-          className="h-16 w-16 rounded-full bg-solana-gradient"
-        />
+        <div className="h-16 w-16 rounded-full bg-solana-gradient" />
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Solana AI Agent
         </h1>
