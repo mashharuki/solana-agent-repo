@@ -1,6 +1,6 @@
 import { getWalletDisplayState } from "@/lib/wallet-state";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * ウォレット未接続時に表示する接続画面。
@@ -10,44 +10,44 @@ import { useState } from "react";
  * Requirements: 1.1, 1.2, 1.5, 1.6
  */
 export function WalletConnectScreen() {
-  const { connecting, connect, select, wallets } = useWallet();
+  const { connecting, connect, select, wallet, wallets } = useWallet();
   const [localError, setLocalError] = useState<string | null>(null);
+  // select() は React state 更新をスケジュールするだけなので、
+  // 同一コール内で connect() を呼ぶと WalletNotSelectedError になる。
+  // このフラグで「選択完了後に接続」を useEffect へ委譲する。
+  const [pendingConnect, setPendingConnect] = useState(false);
 
-  /**
-   * ウォレットの接続状態をもとに、表示すべき UI 状態を決定する。
-   * - connecting: ウォレットに接続中の状態
-   * - error: 接続に失敗した状態（localError にエラーメッセージが入る）
-   * - default: それ以外の状態（接続前の初期状態）
-   */
+  useEffect(() => {
+    if (!pendingConnect || !wallet) return;
+    setPendingConnect(false);
+    connect().catch((err: unknown) => {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "接続に失敗しました。再試行してください。";
+      setLocalError(message);
+    });
+  }, [pendingConnect, wallet, connect]);
+
   const displayState = getWalletDisplayState({
     connected: false,
     connecting,
     error: localError,
   });
 
-  /**
-   * 接続ボタンがクリックされたときの処理。
-   * Phantom ウォレットを優先的に選択して接続を試みる。
-   * 接続に失敗した場合は、エラーメッセージを localError にセットして表示する。
-   */
-  const handleConnect = async () => {
-    try {
-      setLocalError(null);
-      // Phantom を優先的に選択。wallets[0] が Phantom Adapter
-      const phantomWallet = wallets.find((w) =>
-        w.adapter.name.toLowerCase().includes("phantom"),
+  const handleConnect = () => {
+    setLocalError(null);
+    const phantomWallet = wallets.find((w) =>
+      w.adapter.name.toLowerCase().includes("phantom"),
+    );
+    if (phantomWallet) {
+      select(phantomWallet.adapter.name);
+      // wallet state はまだ更新されていないため useEffect 経由で接続する
+      setPendingConnect(true);
+    } else {
+      setLocalError(
+        "Phantom ウォレットが見つかりません。拡張機能をインストールしてください。",
       );
-      if (phantomWallet) {
-        select(phantomWallet.adapter.name);
-      }
-      // 接続を試みる
-      await connect();
-    } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "接続に失敗しました。再試行してください。";
-      setLocalError(message);
     }
   };
 

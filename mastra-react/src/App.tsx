@@ -1,3 +1,4 @@
+import { WalletStatusBar } from "@/components/wallet/WalletStatusBar";
 import {
   Conversation,
   ConversationContent,
@@ -50,7 +51,9 @@ export default function App() {
   };
 
   return (
-    <div className="relative mx-auto size-full h-screen max-w-4xl p-6">
+    <div className="relative flex h-screen flex-col bg-[#0f0f13]">
+      <WalletStatusBar />
+    <div className="mx-auto size-full max-w-4xl flex-1 p-6">
       <div className="flex h-full flex-col">
         <Conversation className="h-full">
           <ConversationContent>
@@ -107,6 +110,7 @@ export default function App() {
           </PromptInputBody>
         </PromptInput>
       </div>
+    </div>
     </div>
   );
 }
