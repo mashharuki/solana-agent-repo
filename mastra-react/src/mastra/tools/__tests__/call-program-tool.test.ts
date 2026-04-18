@@ -9,9 +9,7 @@ const TEST_BLOCKHASH = "11111111111111111111111111111111";
 const VALID_PARAMS = {
   programId: PROGRAM_ID,
   instructionData: "AQID", // base64 = [1,2,3]
-  accounts: [
-    { pubkey: FROM, isSigner: true, isWritable: true },
-  ],
+  accounts: [{ pubkey: FROM, isSigner: true, isWritable: true }],
   fromAddress: FROM,
 };
 
@@ -30,19 +28,22 @@ describe("CallProgramInputSchema", () => {
 
   it("rejects empty accounts array", () => {
     expect(
-      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, accounts: [] }).success,
+      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, accounts: [] })
+        .success,
     ).toBe(false);
   });
 
   it("rejects empty programId", () => {
     expect(
-      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, programId: "" }).success,
+      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, programId: "" })
+        .success,
     ).toBe(false);
   });
 
   it("rejects empty fromAddress", () => {
     expect(
-      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, fromAddress: "" }).success,
+      CallProgramInputSchema.safeParse({ ...VALID_PARAMS, fromAddress: "" })
+        .success,
     ).toBe(false);
   });
 });

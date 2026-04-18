@@ -1,8 +1,9 @@
+import { SIGNING_TIMEOUT_MS, parsePhantomError } from "@/lib/transaction-error";
 import { formatTxType, getTxTypeLabel } from "@/lib/transaction-utils";
 import type { SolanaTxRequest, TransactionSignResult } from "@/types/solana";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Transaction, VersionedTransaction } from "@solana/web3.js";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type SigningStatus = "idle" | "signing" | "success" | "error";
 
@@ -10,28 +11,48 @@ interface TransactionCardProps {
   txRequest: SolanaTxRequest;
   onSign: (result: TransactionSignResult) => void;
   onCancel: () => void;
+  /** Called after successful signing to refresh balance/NFTs */
+  onRefetch?: () => void;
 }
 
 /**
  * チャット内トランザクション署名カード。
  * Agent が返した SolanaTxRequest を表示し、Phantom で署名・送信する。
+ * 120 秒のタイムアウト・Phantom エラーの日本語変換・署名後のリフェッチを含む。
  *
- * Requirements: 4.2, 4.3, 4.4
+ * Requirements: 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8
  */
 export function TransactionCard({
   txRequest,
   onSign,
   onCancel,
+  onRefetch,
 }: TransactionCardProps) {
   const { sendTransaction } = useWallet();
   const { connection } = useConnection();
   const [status, setStatus] = useState<SigningStatus>("idle");
   const [signature, setSignature] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleSign = useCallback(async () => {
     setStatus("signing");
     setErrorMsg(null);
+
+    // 120-second timeout — auto-cancel if Phantom doesn't respond
+    timeoutRef.current = setTimeout(() => {
+      setStatus("error");
+      const timeoutMsg = parsePhantomError(new Error("SIGNING_TIMEOUT"));
+      setErrorMsg(timeoutMsg);
+      onSign({ success: false, error: timeoutMsg });
+    }, SIGNING_TIMEOUT_MS);
 
     try {
       let tx: Transaction | VersionedTransaction;
@@ -44,17 +65,37 @@ export function TransactionCard({
       }
 
       const sig = await sendTransaction(tx, connection);
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
       setSignature(sig);
       setStatus("success");
       onSign({ success: true, signature: sig });
+      onRefetch?.();
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "署名に失敗しました。";
-      setErrorMsg(msg);
-      setStatus("error");
-      onSign({ success: false, error: msg });
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      // Only update if we haven't already timed out
+      setStatus((prev) => {
+        if (prev === "signing") {
+          const parsed =
+            err instanceof Error
+              ? parsePhantomError(err)
+              : "署名に失敗しました。";
+          setErrorMsg(parsed);
+          onSign({ success: false, error: parsed });
+          return "error";
+        }
+        return prev;
+      });
     }
-  }, [txRequest.serializedTx, sendTransaction, connection, onSign]);
+  }, [txRequest.serializedTx, sendTransaction, connection, onSign, onRefetch]);
 
   const handleCancel = useCallback(() => {
     if (status === "signing") return;
@@ -94,7 +135,6 @@ export function TransactionCard({
           {txRequest.description}
         </p>
 
-        {/* Status-specific content */}
         {status === "idle" && (
           <div className="flex gap-2">
             <button
@@ -102,8 +142,7 @@ export function TransactionCard({
               onClick={handleSign}
               className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
               style={{
-                background:
-                  "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
+                background: "linear-gradient(135deg, #9945FF 0%, #14F195 100%)",
               }}
             >
               署名・送信
@@ -119,15 +158,23 @@ export function TransactionCard({
         )}
 
         {status === "signing" && (
-          <div className="flex items-center gap-3 py-1">
-            <div
-              className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: "#9945FF", borderTopColor: "transparent" }}
-              role="status"
-              aria-label="署名待ち"
-            />
-            <p className="text-sm" style={{ color: "#9945FF" }}>
-              Phantom で署名してください…
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 py-1">
+              <div
+                className="h-5 w-5 animate-spin rounded-full border-2 border-t-transparent"
+                style={{
+                  borderColor: "#9945FF",
+                  borderTopColor: "transparent",
+                }}
+                role="status"
+                aria-label="署名待ち"
+              />
+              <p className="text-sm" style={{ color: "#9945FF" }}>
+                Phantom で署名してください…
+              </p>
+            </div>
+            <p className="text-xs" style={{ color: "#666" }}>
+              120 秒以内に応答がない場合は自動キャンセルされます。
             </p>
           </div>
         )}

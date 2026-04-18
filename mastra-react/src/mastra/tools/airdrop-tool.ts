@@ -23,7 +23,8 @@ export async function executeAirdrop(
     await confirmFn(signature);
     return { signature, amountSol };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "エアドロップに失敗しました";
+    const msg =
+      err instanceof Error ? err.message : "エアドロップに失敗しました";
     throw new Error(`RPC_ERROR: DevNet エアドロップに失敗しました。${msg}`);
   }
 }
@@ -72,9 +73,7 @@ Use case: 'DevNet SOL をエアドロップして', 'Airdrop 1 SOL to my wallet'
       amountSol,
       (_addr, lamports) => connection.requestAirdrop(publicKey, lamports),
       (sig) =>
-        connection
-          .confirmTransaction(sig, "confirmed")
-          .then(() => undefined),
+        connection.confirmTransaction(sig, "confirmed").then(() => undefined),
     );
   },
 });

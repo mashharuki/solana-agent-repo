@@ -11,25 +11,29 @@ const VALID_ADDRESS = "So11111111111111111111111111111111111111112";
 describe("AirdropInputSchema", () => {
   it("accepts valid airdrop input", () => {
     expect(
-      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 1 }).success,
+      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 1 })
+        .success,
     ).toBe(true);
   });
 
   it("rejects amountSol > 2", () => {
     expect(
-      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 2.1 }).success,
+      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 2.1 })
+        .success,
     ).toBe(false);
   });
 
   it("rejects amountSol = 0", () => {
     expect(
-      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 0 }).success,
+      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 0 })
+        .success,
     ).toBe(false);
   });
 
   it("rejects negative amountSol", () => {
     expect(
-      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: -1 }).success,
+      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: -1 })
+        .success,
     ).toBe(false);
   });
 
@@ -41,7 +45,8 @@ describe("AirdropInputSchema", () => {
 
   it("accepts exactly 2 SOL", () => {
     expect(
-      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 2 }).success,
+      AirdropInputSchema.safeParse({ address: VALID_ADDRESS, amountSol: 2 })
+        .success,
     ).toBe(true);
   });
 });
@@ -57,7 +62,12 @@ describe("executeAirdrop", () => {
     const requestAirdropFn = vi.fn().mockResolvedValue(FAKE_SIG);
     const confirmFn = vi.fn().mockResolvedValue(undefined);
 
-    const result = await executeAirdrop(VALID_ADDRESS, 1, requestAirdropFn, confirmFn);
+    const result = await executeAirdrop(
+      VALID_ADDRESS,
+      1,
+      requestAirdropFn,
+      confirmFn,
+    );
 
     expect(result.signature).toBe(FAKE_SIG);
     expect(result.amountSol).toBe(1);
@@ -82,7 +92,9 @@ describe("executeAirdrop", () => {
   });
 
   it("throws RPC_ERROR when requestAirdrop fails", async () => {
-    const requestAirdropFn = vi.fn().mockRejectedValue(new Error("airdrop limit exceeded"));
+    const requestAirdropFn = vi
+      .fn()
+      .mockRejectedValue(new Error("airdrop limit exceeded"));
     const confirmFn = vi.fn();
 
     await expect(
@@ -94,7 +106,12 @@ describe("executeAirdrop", () => {
     const requestAirdropFn = vi.fn().mockResolvedValue(FAKE_SIG);
     const confirmFn = vi.fn().mockResolvedValue(undefined);
 
-    const result = await executeAirdrop(VALID_ADDRESS, 2, requestAirdropFn, confirmFn);
+    const result = await executeAirdrop(
+      VALID_ADDRESS,
+      2,
+      requestAirdropFn,
+      confirmFn,
+    );
 
     expect(result.amountSol).toBe(2);
   });
