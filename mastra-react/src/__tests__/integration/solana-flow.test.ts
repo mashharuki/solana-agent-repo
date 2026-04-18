@@ -45,9 +45,9 @@ const FAKE_SIGNATURE = "5xFakeSignatureAbcdef1234567890AbcdefGhij";
 
 describe("SOL 残高取得フロー (fetchSolBalance)", () => {
   function makeConnection(lamports: number) {
-    return { getBalance: vi.fn().mockResolvedValue(lamports) } as unknown as Parameters<
-      typeof fetchSolBalance
-    >[0];
+    return {
+      getBalance: vi.fn().mockResolvedValue(lamports),
+    } as unknown as Parameters<typeof fetchSolBalance>[0];
   }
   function makePublicKey(addr: string) {
     return addr as unknown as Parameters<typeof fetchSolBalance>[1];
@@ -143,7 +143,9 @@ describe("NFT 一覧取得フロー (fetchNFTsByOwner + mapDasAssetToNFT)", () =
   it("Req 3.5: DAS API 非対応 RPC (items なし) → 空配列を返す", async () => {
     const fetchFn = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ error: { code: -32601, message: "Method not found" } }),
+      json: async () => ({
+        error: { code: -32601, message: "Method not found" },
+      }),
     });
     const nfts = await fetchNFTsByOwner(
       "https://api.devnet.solana.com",
@@ -212,7 +214,9 @@ describe("DevNet エアドロップ → 残高増加フロー (Req 7.3)", () => 
   });
 
   it("RPC エラー時は RPC_ERROR を含むエラーをスローする", async () => {
-    const requestFn = vi.fn().mockRejectedValue(new Error("airdrop limit exceeded"));
+    const requestFn = vi
+      .fn()
+      .mockRejectedValue(new Error("airdrop limit exceeded"));
     const confirmFn = vi.fn();
 
     await expect(
@@ -278,7 +282,11 @@ describe("送金フロー統合 (detectTxRequest → sign → buildTxResultFollo
   });
 
   it("Req 2.2: ツール出力が非 tx オブジェクト（残高情報等）の場合は検出されない", () => {
-    const balanceOutput = { address: WALLET_ADDRESS, sol: 1.5, network: "devnet" };
+    const balanceOutput = {
+      address: WALLET_ADDRESS,
+      sol: 1.5,
+      network: "devnet",
+    };
     const detected = detectTxRequest(balanceOutput);
     expect(detected).toBeNull();
   });

@@ -28,16 +28,12 @@ describe("validateFrontendEnvVars", () => {
 
   it("VITE_SOLANA_RPC_URL が未設定の場合はエラーをスローする", () => {
     const env = { VITE_SOLANA_NETWORK: "devnet" };
-    expect(() => validateFrontendEnvVars(env)).toThrow(
-      "VITE_SOLANA_RPC_URL",
-    );
+    expect(() => validateFrontendEnvVars(env)).toThrow("VITE_SOLANA_RPC_URL");
   });
 
   it("VITE_SOLANA_NETWORK が未設定の場合はエラーをスローする", () => {
     const env = { VITE_SOLANA_RPC_URL: "https://api.devnet.solana.com" };
-    expect(() => validateFrontendEnvVars(env)).toThrow(
-      "VITE_SOLANA_NETWORK",
-    );
+    expect(() => validateFrontendEnvVars(env)).toThrow("VITE_SOLANA_NETWORK");
   });
 
   it("複数の必須変数が未設定の場合、全変数名をエラーメッセージに含める", () => {

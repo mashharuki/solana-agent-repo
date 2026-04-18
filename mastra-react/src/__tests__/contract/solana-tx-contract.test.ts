@@ -33,23 +33,43 @@ describe("transferSolTool の SolanaTxRequest 返却形式 (Req 4.1, 5.2)", () =
   }
 
   it("Req 4.1: 返却値が SolanaTxRequestSchema を満たす", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     expect(() => SolanaTxRequestSchema.parse(result)).not.toThrow();
   });
 
   it("Req 5.2: txType は 'transfer'", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.1, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.1,
+      makeDeps(1_000_000_000),
+    );
     expect(result.txType).toBe("transfer");
   });
 
   it("Req 5.2: serializedTx は非空の Base64 文字列", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.5, makeDeps(2_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.5,
+      makeDeps(2_000_000_000),
+    );
     expect(result.serializedTx).toMatch(/^[A-Za-z0-9+/]+=*$/);
     expect(result.serializedTx.length).toBeGreaterThan(0);
   });
 
   it("Req 5.2: description に金額と送金先が含まれる", async () => {
-    const result = await buildTransferTransaction(FROM, TO, 0.25, makeDeps(1_000_000_000));
+    const result = await buildTransferTransaction(
+      FROM,
+      TO,
+      0.25,
+      makeDeps(1_000_000_000),
+    );
     expect(result.description).toContain("0.25");
     // Truncated TO address: "Toke...Q5DA"
     expect(result.description).toMatch(/Toke|Q5DA/);
@@ -57,7 +77,7 @@ describe("transferSolTool の SolanaTxRequest 返却形式 (Req 4.1, 5.2)", () =
 
   it("残高不足の場合は INSUFFICIENT_BALANCE エラー（SolanaTxRequest を返さない）", async () => {
     await expect(
-      buildTransferTransaction(FROM, TO, 10, makeDeps(0))
+      buildTransferTransaction(FROM, TO, 10, makeDeps(0)),
     ).rejects.toThrow(/INSUFFICIENT_BALANCE/);
   });
 
@@ -106,22 +126,34 @@ describe("jupiterSwapTool の SolanaTxRequest 返却形式 (Req 4.1, 5.4)", () =
   }
 
   it("Req 4.1: 返却値が SolanaTxRequestSchema を満たす", async () => {
-    const result = await buildJupiterSwapTransaction(BASE_PARAMS, makeSwapFetch());
+    const result = await buildJupiterSwapTransaction(
+      BASE_PARAMS,
+      makeSwapFetch(),
+    );
     expect(() => SolanaTxRequestSchema.parse(result)).not.toThrow();
   });
 
   it("Req 5.4: txType は 'swap'", async () => {
-    const result = await buildJupiterSwapTransaction(BASE_PARAMS, makeSwapFetch());
+    const result = await buildJupiterSwapTransaction(
+      BASE_PARAMS,
+      makeSwapFetch(),
+    );
     expect(result.txType).toBe("swap");
   });
 
   it("Req 5.4: serializedTx は Jupiter の swapTransaction をそのまま使用する", async () => {
-    const result = await buildJupiterSwapTransaction(BASE_PARAMS, makeSwapFetch(FAKE_SWAP_TX));
+    const result = await buildJupiterSwapTransaction(
+      BASE_PARAMS,
+      makeSwapFetch(FAKE_SWAP_TX),
+    );
     expect(result.serializedTx).toBe(FAKE_SWAP_TX);
   });
 
   it("Req 5.4: description にスワップ情報が含まれる", async () => {
-    const result = await buildJupiterSwapTransaction(BASE_PARAMS, makeSwapFetch());
+    const result = await buildJupiterSwapTransaction(
+      BASE_PARAMS,
+      makeSwapFetch(),
+    );
     expect(typeof result.description).toBe("string");
     expect(result.description.length).toBeGreaterThan(0);
   });
@@ -148,7 +180,7 @@ describe("jupiterSwapTool の SolanaTxRequest 返却形式 (Req 4.1, 5.4)", () =
       json: () => Promise.resolve({ error: "Route not found" }),
     });
     await expect(
-      buildJupiterSwapTransaction(BASE_PARAMS, fetchFn)
+      buildJupiterSwapTransaction(BASE_PARAMS, fetchFn),
     ).rejects.toThrow(/Route not found/);
   });
 });

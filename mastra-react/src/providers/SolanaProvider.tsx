@@ -1,4 +1,7 @@
-import { getValidatedRpcUrl, validateFrontendEnvVars } from "@/lib/solana-utils";
+import {
+  getValidatedRpcUrl,
+  validateFrontendEnvVars,
+} from "@/lib/solana-utils";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import {
   ConnectionProvider,

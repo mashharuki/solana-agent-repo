@@ -9,10 +9,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 // ── useSolanaBalance ────────────────────────────────────────────
-import {
-  LAMPORTS_PER_SOL,
-  fetchSolBalance,
-} from "@/hooks/useSolanaBalance";
+import { LAMPORTS_PER_SOL, fetchSolBalance } from "@/hooks/useSolanaBalance";
 
 // ── useNFTs ────────────────────────────────────────────────────
 import {
@@ -32,10 +29,15 @@ describe("LAMPORTS_PER_SOL 定数 (Req 3.1)", () => {
 });
 
 describe("fetchSolBalance — モック RPC レスポンスによるユニットテスト (Req 3.1)", () => {
-  const mockPublicKey = "So11111111111111111111111111111111111111112" as unknown as Parameters<typeof fetchSolBalance>[1];
+  const mockPublicKey =
+    "So11111111111111111111111111111111111111112" as unknown as Parameters<
+      typeof fetchSolBalance
+    >[1];
 
   function makeConn(lamports: number) {
-    return { getBalance: vi.fn().mockResolvedValue(lamports) } as unknown as Parameters<typeof fetchSolBalance>[0];
+    return {
+      getBalance: vi.fn().mockResolvedValue(lamports),
+    } as unknown as Parameters<typeof fetchSolBalance>[0];
   }
 
   it("100_000_000 lamports → 0.1 SOL を返す", async () => {
@@ -44,7 +46,10 @@ describe("fetchSolBalance — モック RPC レスポンスによるユニット
   });
 
   it("1_000_000_000 lamports → 1 SOL を返す", async () => {
-    const result = await fetchSolBalance(makeConn(LAMPORTS_PER_SOL), mockPublicKey);
+    const result = await fetchSolBalance(
+      makeConn(LAMPORTS_PER_SOL),
+      mockPublicKey,
+    );
     expect(result).toBe(1);
   });
 
@@ -54,7 +59,10 @@ describe("fetchSolBalance — モック RPC レスポンスによるユニット
   });
 
   it("2_000_000_000 lamports → 2 SOL を返す", async () => {
-    const result = await fetchSolBalance(makeConn(2_000_000_000), mockPublicKey);
+    const result = await fetchSolBalance(
+      makeConn(2_000_000_000),
+      mockPublicKey,
+    );
     expect(result).toBe(2);
   });
 
@@ -67,7 +75,9 @@ describe("fetchSolBalance — モック RPC レスポンスによるユニット
     const conn = {
       getBalance: vi.fn().mockRejectedValue(new Error("RPC timeout")),
     } as unknown as Parameters<typeof fetchSolBalance>[0];
-    await expect(fetchSolBalance(conn, mockPublicKey)).rejects.toThrow("RPC timeout");
+    await expect(fetchSolBalance(conn, mockPublicKey)).rejects.toThrow(
+      "RPC timeout",
+    );
   });
 
   it("getBalance の呼び出しに publicKey が渡される", async () => {
@@ -151,7 +161,9 @@ describe("fetchNFTsByOwner — モック fetch によるユニットテスト (R
   it("DAS API エラーレスポンス → 空配列を返す（フォールバック）", async () => {
     const fetchFn = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ error: { code: -32601, message: "Method not found" } }),
+      json: async () => ({
+        error: { code: -32601, message: "Method not found" },
+      }),
     });
     const nfts = await fetchNFTsByOwner(RPC_URL, OWNER, fetchFn);
     expect(nfts).toEqual([]);
