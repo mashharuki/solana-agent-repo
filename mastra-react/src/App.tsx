@@ -1,3 +1,4 @@
+import { AssetPanel } from "@/components/asset/AssetPanel";
 import { NetworkMismatchBanner } from "@/components/wallet/NetworkMismatchBanner";
 import { WalletStatusBar } from "@/components/wallet/WalletStatusBar";
 import {
@@ -55,8 +56,9 @@ export default function App() {
     <div className="relative flex h-screen flex-col bg-[#0f0f13]">
       <WalletStatusBar />
       <NetworkMismatchBanner />
-      <div className="mx-auto size-full max-w-4xl flex-1 p-6">
-        <div className="flex h-full flex-col">
+      <div className="mx-auto flex size-full max-w-6xl flex-1 gap-4 overflow-hidden p-6">
+        <AssetPanel />
+        <div className="flex min-w-0 flex-1 flex-col">
           <Conversation className="h-full">
             <ConversationContent>
               {messages.map((message) => (
