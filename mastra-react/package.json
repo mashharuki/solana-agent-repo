@@ -6,6 +6,7 @@
   "scripts": {
     "format": "bunx biome format --write .",
     "dev": "vite",
+    "dev:mastra": "bunx mastra dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

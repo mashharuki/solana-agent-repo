@@ -1,0 +1,367 @@
+### Mastra Solana AI Agent — REST Client 動作確認
+### 前提: `npx mastra dev` を起動して localhost:4111 でサーバーが稼働していること
+### VS Code 拡張: REST Client (humao.rest-client) が必要
+
+@baseUrl = http://localhost:4111
+@agentId = solana-agent
+
+# テスト用 DevNet ウォレットアドレス（実際のアドレスに書き換えてください）
+@walletAddress = 4Bb5ea2KjCzXoU9ViBuvK3jj7WKKFwbvdeMbKwAxaDg7
+@recipientAddress = 4Nd1mBQtrMJVYVfKf2PX2RL9ykqMqzsepPegEmtaDCWC
+
+
+# ============================================================
+# 0. ヘルスチェック & エージェント一覧
+# ============================================================
+
+### 0-1. Mastra サーバーが起動しているか確認
+GET {{baseUrl}}/api
+Accept: application/json
+
+###
+
+### 0-2. 登録済みエージェント一覧を取得
+GET {{baseUrl}}/api/agents
+Accept: application/json
+
+###
+
+### 0-3. solana-agent の詳細情報を取得
+GET {{baseUrl}}/api/agents/{{agentId}}
+Accept: application/json
+
+###
+
+### 0-4. solana-agent が持つツール一覧を確認
+GET {{baseUrl}}/api/agents/{{agentId}}/tools
+Accept: application/json
+
+###
+
+
+# ============================================================
+# 1. エージェント基本応答テスト（generate）
+# ============================================================
+
+### 1-1. 挨拶 — 日本語で返答するか確認
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "こんにちは！あなたは何ができますか？"
+    }
+  ]
+}
+
+###
+
+### 1-2. 英語メッセージにも日本語で返答するか確認
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "What can you do on Solana?"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 2. SOL 残高照会（getBalanceTool）
+# ============================================================
+
+### 2-1. 残高照会 — 自然言語（日本語）
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} の SOL 残高を教えてください。"
+    }
+  ]
+}
+
+###
+
+### 2-2. 残高照会 — 英語
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Check the SOL balance of {{walletAddress}}"
+    }
+  ]
+}
+
+###
+
+### 2-3. 残高照会 — 無効アドレスでエラーハンドリング確認
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "invalid-address の残高を確認してください。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 3. DevNet エアドロップ（airdropTool）
+# ============================================================
+
+### 3-1. 1 SOL エアドロップ
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} に DevNet SOL を 1 SOL エアドロップしてください。"
+    }
+  ]
+}
+
+###
+
+### 3-2. 最大量（2 SOL）エアドロップ
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Airdrop 2 SOL to {{walletAddress}} on DevNet"
+    }
+  ]
+}
+
+###
+
+### 3-3. 上限超過（3 SOL）でエラー確認
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} に 3 SOL エアドロップしてください。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 4. SOL 送金トランザクション構築（transferSolTool）
+# ============================================================
+
+### 4-1. 0.1 SOL 送金トランザクションを構築
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} から {{recipientAddress}} に 0.1 SOL 送金するトランザクションを作成してください。"
+    }
+  ]
+}
+
+###
+
+### 4-2. 残高超過の送金でエラーハンドリング確認
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} から {{recipientAddress}} に 9999 SOL 送金してください。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 5. NFT 操作（getNftsTool / mintNftTool）
+# ============================================================
+
+### 5-1. NFT 一覧取得
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} が保有している NFT を教えてください。"
+    }
+  ]
+}
+
+###
+
+### 5-2. NFT 発行トランザクション構築
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} に「Solana Bootcamp 2025」という名前で BOOT というシンボルの NFT を発行したいです。メタデータ URI は https://arweave.net/example-metadata.json で、ロイヤリティは 5% でお願いします。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 6. Jupiter スワップ（jupiterSwapTool）
+# ============================================================
+
+### 6-1. SOL → USDC スワップトランザクション構築
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} で SOL を 0.5 SOL 分 USDC にスワップするトランザクションを作成してください。スリッページは 1% でお願いします。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 7. マルチターン会話（会話履歴テスト）
+# ============================================================
+
+### 7-1. マルチターン — 残高確認 → エアドロップ提案の流れ
+POST {{baseUrl}}/api/agents/{{agentId}}/generate
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{walletAddress}} の残高を確認してください。"
+    },
+    {
+      "role": "assistant",
+      "content": "残高を確認しました。現在の残高は 0.0000 SOL です。DevNet のエアドロップを利用してテスト用 SOL を取得することができます。ご希望ですか？"
+    },
+    {
+      "role": "user",
+      "content": "はい、1 SOL エアドロップしてください。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 8. チャットルート（@mastra/ai-sdk chatRoute）
+# Vercel AI SDK useChat() と同じフォーマット
+# ============================================================
+
+### 8-1. chatRoute 経由でエージェントと会話
+POST {{baseUrl}}/chat/{{agentId}}
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "id": "msg-001",
+      "role": "user",
+      "content": "Solana DevNet で何ができますか？"
+    }
+  ]
+}
+
+###
+
+### 8-2. chatRoute 経由で残高照会
+POST {{baseUrl}}/chat/{{agentId}}
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "id": "msg-002",
+      "role": "user",
+      "content": "{{walletAddress}} の SOL 残高を確認して"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 9. ストリーミングレスポンス
+# ============================================================
+
+### 9-1. ストリーミングで応答を取得
+POST {{baseUrl}}/api/agents/{{agentId}}/stream
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Solana の特徴を詳しく教えてください。"
+    }
+  ]
+}
+
+###
+
+
+# ============================================================
+# 10. Observability & ストレージ確認（開発時のデバッグ用）
+# ============================================================
+
+### 10-1. エージェントのメモリ（スレッド一覧）確認
+GET {{baseUrl}}/api/memory/threads?agentId={{agentId}}
+Accept: application/json
+
+###
+
+### 10-2. ワークフロー一覧（登録済みワークフローがあれば）
+GET {{baseUrl}}/api/workflows
+Accept: application/json
+
+###

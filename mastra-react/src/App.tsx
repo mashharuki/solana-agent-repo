@@ -92,15 +92,27 @@ export default function App() {
   // PromptInputTextarea は forwardRef 非対応のため、親 div に ref を置いて querySelector する
   const inputAreaRef = React.useRef<HTMLDivElement | null>(null);
 
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/chat/solana-agent",
     }),
   });
 
+  // 署名/キャンセル後のフォローアップを status === "ready" になってから送るためのキュー
+  const pendingFollowUp = React.useRef<string | null>(null);
+
+  // status が "ready" になったらキュー済みフォローアップを送信する
+  React.useEffect(() => {
+    if (status !== "ready") return;
+    if (pendingFollowUp.current === null) return;
+    const text = pendingFollowUp.current;
+    pendingFollowUp.current = null;
+    sendMessage({ text });
+  }, [status, sendMessage]);
+
   // ── メッセージ全体をスキャンして最新の TxRequest を検出 ─────────────
   // レンダリング中に setState を呼ばないために useMemo で計算し、
-  // useEffect で pendingTxRequest に同期する（バグ修正: 問題1）
+  // useEffect で pendingTxRequest に同期する
   const detectedTxReq = React.useMemo<SolanaTxRequest | null>(() => {
     // 最後のメッセージから逆順に走査し、最初に見つかった txReq を返す
     for (let i = messages.length - 1; i >= 0; i--) {
@@ -117,13 +129,16 @@ export default function App() {
   }, [messages]);
 
   // detectedTxReq が非null で、まだ処理されていない場合に同期
+  // status が "ready" の場合のみ TransactionCard を表示する
+  // （streaming 中に署名 → sendMessage 競合を防止）
   React.useEffect(() => {
     if (detectedTxReq === null) return;
+    if (status !== "ready") return;
     const key = detectedTxReq.serializedTx;
     if (pendingTxRequest === null && !handledTxKeys.current.has(key)) {
       setPendingTxRequest(detectedTxReq);
     }
-  }, [detectedTxReq, pendingTxRequest]);
+  }, [detectedTxReq, pendingTxRequest, status]);
 
   // ── 送信可否 ────────────────────────────────────────────────────
   const isInputDisabled =
@@ -141,6 +156,9 @@ export default function App() {
   );
 
   // ── 署名・キャンセルハンドラ ────────────────────────────────────
+  // フォローアップは status === "ready" になってから送信する。
+  // streaming 中に sendMessage を呼ぶとチャットが stuck するため、
+  // pendingFollowUp にキューイングして useEffect で送る。
   const handleSign = React.useCallback(
     (result: TransactionSignResult) => {
       const followUp = buildTxResultFollowUp(result);
@@ -149,9 +167,13 @@ export default function App() {
         if (prev) handledTxKeys.current.add(prev.serializedTx);
         return null;
       });
-      sendMessage({ text: followUp });
+      if (status === "ready") {
+        sendMessage({ text: followUp });
+      } else {
+        pendingFollowUp.current = followUp;
+      }
     },
-    [sendMessage],
+    [sendMessage, status],
   );
 
   const handleCancel = React.useCallback(() => {
@@ -161,8 +183,12 @@ export default function App() {
       if (prev) handledTxKeys.current.add(prev.serializedTx);
       return null;
     });
-    sendMessage({ text: cancelMsg });
-  }, [sendMessage]);
+    if (status === "ready") {
+      sendMessage({ text: cancelMsg });
+    } else {
+      pendingFollowUp.current = cancelMsg;
+    }
+  }, [sendMessage, status]);
 
   const handleRefetch = React.useCallback(() => {
     refetchBalance();
@@ -184,8 +210,9 @@ export default function App() {
 
   // ── ストップハンドラ ────────────────────────────────────────────
   const handleStop = React.useCallback(() => {
-    // useChat の stop() があれば呼ぶ（将来拡張用）
-  }, []);
+    stop();
+    pendingFollowUp.current = null;
+  }, [stop]);
 
   return (
     <div className="relative flex h-full flex-col bg-background">
