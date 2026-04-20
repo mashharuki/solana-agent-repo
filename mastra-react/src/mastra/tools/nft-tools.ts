@@ -1,10 +1,14 @@
 import { createTool } from "@mastra/core/tools";
+import { create, mplCore, ruleSet } from "@metaplex-foundation/mpl-core";
 import {
-  Keypair,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-} from "@solana/web3.js";
+  createNoopSigner,
+  generateSigner,
+  publicKey as umiPublicKey,
+  signerIdentity,
+} from "@metaplex-foundation/umi";
+import type { Umi } from "@metaplex-foundation/umi";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { PublicKey } from "@solana/web3.js";
 import type { DasAssetLike } from "../../hooks/useNFTs";
 import { mapDasAssetToNFT } from "../../hooks/useNFTs";
 import {
@@ -16,11 +20,6 @@ import {
   type MintNftInput,
   type SolanaTxRequest,
 } from "../../types/solana";
-
-// Token Program (SPL Token)
-const TOKEN_PROGRAM_ID = new PublicKey(
-  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-);
 
 // ─────────────────────────────────────────────
 // getNftsTool — core logic
@@ -95,54 +94,63 @@ Use case: 'NFT を見せて', 'What NFTs do I own?', '保有 NFT 一覧'`,
 // ─────────────────────────────────────────────
 
 interface MintDeps {
+  createUmiFn: () => Umi;
   getRecentBlockhashFn: () => Promise<string>;
 }
 
 /**
  * NFT 発行トランザクションを構築するコアロジック（injectable deps）。
  *
- * @solana/spl-token と @metaplex-foundation/mpl-token-metadata が
- * インストールされていないため、mint アカウントの SystemProgram.createAccount
- * を含む最小構成トランザクションを返します。
- * 本番では spl-token + mpl-token-metadata を使用した完全実装を推奨します。
+ * Metaplex Core (mpl-core) の create() 命令で Core Asset アカウントを作成する。
+ * ownerAddress は createNoopSigner で設定 — 実際の署名は Phantom ウォレットが行う。
+ * asset keypair はサーバー側で生成・署名する（SystemProgram.createAccount 相当）。
+ * sellerFeeBasisPoints > 0 の場合は Royalties プラグインを付与する。
  */
 export async function buildMintNftTransaction(
   params: MintNftInput,
   deps: MintDeps,
 ): Promise<SolanaTxRequest> {
-  const ownerPubkey = new PublicKey(params.ownerAddress);
-  const mintKeypair = Keypair.generate();
+  const umi = deps.createUmiFn();
+  const ownerKey = umiPublicKey(params.ownerAddress);
+
+  // The owner signs via Phantom in the browser. createNoopSigner puts zero
+  // bytes in the feePayer signature slot; Phantom fills in the real signature.
+  umi.use(signerIdentity(createNoopSigner(ownerKey)));
+
+  // Asset keypair is a new account generated server-side; it signs for real.
+  const asset = generateSigner(umi);
   const blockhash = await deps.getRecentBlockhashFn();
 
-  const transaction = new Transaction();
+  const plugins =
+    params.sellerFeeBasisPoints > 0
+      ? [
+          {
+            type: "Royalties" as const,
+            basisPoints: params.sellerFeeBasisPoints,
+            creators: [{ address: ownerKey, percentage: 100 }],
+            ruleSet: ruleSet("None"),
+          },
+        ]
+      : [];
 
-  // Create mint account (82 bytes = SPL Token mint size)
-  transaction.add(
-    SystemProgram.createAccount({
-      fromPubkey: ownerPubkey,
-      newAccountPubkey: mintKeypair.publicKey,
-      lamports: 1_461_600, // standard rent-exempt amount for mint
-      space: 82,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-  );
+  const builtTx = await create(umi, {
+    asset,
+    name: params.name,
+    uri: params.uri,
+    plugins,
+  })
+    .setBlockhash(blockhash)
+    .buildAndSign(umi);
 
-  transaction.recentBlockhash = blockhash;
-  transaction.feePayer = ownerPubkey;
-
-  // SystemProgram.createAccount requires the new account (mintKeypair) to co-sign.
-  // Pre-sign here so the user only needs to add their wallet signature via Phantom.
-  transaction.partialSign(mintKeypair);
-
-  const serializedTx = transaction
-    .serialize({ requireAllSignatures: false })
-    .toString("base64");
+  const serializedTx = Buffer.from(
+    umi.transactions.serialize(builtTx),
+  ).toString("base64");
 
   const royaltyPct = (params.sellerFeeBasisPoints / 100).toFixed(2);
   const description =
     `NFT「${params.name}」(${params.symbol}) を発行 | ` +
     `ロイヤリティ: ${royaltyPct}% | ` +
-    `Mint: ${mintKeypair.publicKey.toBase58().slice(0, 8)}...`;
+    `Asset: ${asset.publicKey.slice(0, 8)}...`;
 
   return {
     type: "solana_tx_request",
@@ -161,7 +169,7 @@ export async function buildMintNftTransaction(
  * 使用シナリオ:
  * - ユーザーが「NFT を発行して」「NFT を mint したい」と依頼したとき
  *
- * Build an NFT mint transaction. The agent never signs — only the user does.
+ * Build an NFT mint transaction using Metaplex Core. The agent never signs — only the user does.
  * Royalty is specified in basis points (500 = 5%).
  */
 export const mintNftTool = createTool({
@@ -195,6 +203,7 @@ Use case: 'NFT を発行して', 'Mint an NFT named "Sky" with 5% royalty'`,
     const connection = new Connection(rpcUrl, "confirmed");
 
     return buildMintNftTransaction(params, {
+      createUmiFn: () => createUmi(rpcUrl).use(mplCore()),
       getRecentBlockhashFn: async () => {
         const { blockhash } = await connection.getLatestBlockhash("confirmed");
         return blockhash;

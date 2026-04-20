@@ -1,3 +1,5 @@
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { mplCore } from "@metaplex-foundation/mpl-core";
 import { describe, expect, it, vi } from "vitest";
 import { GetNftsInputSchema, MintNftInputSchema } from "../../../types/solana";
 import { buildMintNftTransaction, executeGetNfts } from "../nft-tools";
@@ -5,6 +7,14 @@ import { buildMintNftTransaction, executeGetNfts } from "../nft-tools";
 // Valid Solana addresses for tests
 const OWNER = "So11111111111111111111111111111111111111112";
 const TEST_BLOCKHASH = "11111111111111111111111111111111";
+
+// Shared deps factory — uses real mpl-core with fake RPC URL (never called)
+function makeCoreDeps() {
+  return {
+    createUmiFn: () => createUmi("http://localhost:8899").use(mplCore()),
+    getRecentBlockhashFn: vi.fn().mockResolvedValue(TEST_BLOCKHASH),
+  };
+}
 
 // ─────────────────────────────────────────────
 // Input schema validation
@@ -106,7 +116,7 @@ describe("executeGetNfts", () => {
 });
 
 // ─────────────────────────────────────────────
-// buildMintNftTransaction
+// buildMintNftTransaction (existing — updated deps shape)
 // ─────────────────────────────────────────────
 
 describe("buildMintNftTransaction", () => {
@@ -117,33 +127,103 @@ describe("buildMintNftTransaction", () => {
     uri: "https://example.com/metadata.json",
     sellerFeeBasisPoints: 500,
   };
-  const deps = {
-    getRecentBlockhashFn: vi.fn().mockResolvedValue(TEST_BLOCKHASH),
-  };
 
   it('returns SolanaTxRequest with type "solana_tx_request"', async () => {
-    const result = await buildMintNftTransaction(validParams, deps);
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
     expect(result.type).toBe("solana_tx_request");
   });
 
   it('returns txType "nft_mint"', async () => {
-    const result = await buildMintNftTransaction(validParams, deps);
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
     expect(result.txType).toBe("nft_mint");
   });
 
   it("returns a non-empty base64 serializedTx", async () => {
-    const result = await buildMintNftTransaction(validParams, deps);
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
     expect(result.serializedTx.length).toBeGreaterThan(0);
     expect(result.serializedTx).toMatch(/^[A-Za-z0-9+/]+=*$/);
   });
 
   it("includes the NFT name in description", async () => {
-    const result = await buildMintNftTransaction(validParams, deps);
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
     expect(result.description).toContain("My NFT");
   });
 
   it("includes the symbol in description", async () => {
-    const result = await buildMintNftTransaction(validParams, deps);
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
     expect(result.description).toContain("MN");
+  });
+});
+
+// ─────────────────────────────────────────────
+// buildMintNftTransaction — mpl-core (real implementation)
+// ─────────────────────────────────────────────
+
+describe("buildMintNftTransaction (mpl-core)", () => {
+  const validParams = {
+    ownerAddress: OWNER,
+    name: "Core NFT",
+    symbol: "CNFT",
+    uri: "https://arweave.net/abc123/metadata.json",
+    sellerFeeBasisPoints: 500,
+  };
+
+  it('returns SolanaTxRequest with type "solana_tx_request"', async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.type).toBe("solana_tx_request");
+  });
+
+  it('returns txType "nft_mint"', async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.txType).toBe("nft_mint");
+  });
+
+  it("returns a non-empty base64 serializedTx", async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.serializedTx.length).toBeGreaterThan(0);
+    expect(result.serializedTx).toMatch(/^[A-Za-z0-9+/]+=*$/);
+  });
+
+  it("serializedTx deserializes as VersionedTransaction with version 0", async () => {
+    const { VersionedTransaction } = await import("@solana/web3.js");
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    const bytes = Uint8Array.from(atob(result.serializedTx), (c) =>
+      c.charCodeAt(0),
+    );
+    const vt = VersionedTransaction.deserialize(bytes);
+    expect(vt.message.version).toBe(0);
+  });
+
+  it("description includes the NFT name", async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.description).toContain("Core NFT");
+  });
+
+  it("description includes the symbol", async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.description).toContain("CNFT");
+  });
+
+  it("description includes royalty percentage (5.00%)", async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.description).toContain("5.00%");
+  });
+
+  it("description includes truncated asset public key", async () => {
+    const result = await buildMintNftTransaction(validParams, makeCoreDeps());
+    expect(result.description).toMatch(/Asset: [A-Za-z0-9]{8}\.\.\./);
+  });
+
+  it("builds without royalties when sellerFeeBasisPoints is 0", async () => {
+    const params = { ...validParams, sellerFeeBasisPoints: 0 };
+    const result = await buildMintNftTransaction(params, makeCoreDeps());
+    expect(result.type).toBe("solana_tx_request");
+    expect(result.serializedTx.length).toBeGreaterThan(0);
+  });
+
+  it("calls getRecentBlockhashFn exactly once", async () => {
+    const deps = makeCoreDeps();
+    await buildMintNftTransaction(validParams, deps);
+    expect(deps.getRecentBlockhashFn).toHaveBeenCalledTimes(1);
   });
 });
