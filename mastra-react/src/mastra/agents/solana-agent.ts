@@ -94,7 +94,7 @@ export const solanaAgent = new Agent({
   id: SOLANA_AGENT_ID,
   name: "Solana AI Agent",
   instructions: SOLANA_AGENT_INSTRUCTIONS,
-  model: "google/gemini-3-flash-preview",
+  model: "google/gemini-3.1-flash-lite-preview",
   tools: {
     getBalanceTool,
     transferSolTool,

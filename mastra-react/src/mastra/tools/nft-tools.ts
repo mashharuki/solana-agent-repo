@@ -130,6 +130,10 @@ export async function buildMintNftTransaction(
   transaction.recentBlockhash = blockhash;
   transaction.feePayer = ownerPubkey;
 
+  // SystemProgram.createAccount requires the new account (mintKeypair) to co-sign.
+  // Pre-sign here so the user only needs to add their wallet signature via Phantom.
+  transaction.partialSign(mintKeypair);
+
   const serializedTx = transaction
     .serialize({ requireAllSignatures: false })
     .toString("base64");
