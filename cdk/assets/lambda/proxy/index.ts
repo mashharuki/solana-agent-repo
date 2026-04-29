@@ -44,7 +44,7 @@ function corsHeaders(allowedOrigin: string) {
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const allowedOrigin = process.env.ALLOWED_ORIGIN ?? "*";
   const modelId =
-    process.env.BEDROCK_MODEL_ID ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
+    process.env.BEDROCK_MODEL_ID ?? "jp.anthropic.claude-haiku-4-5-20251001-v1:0";
 
   // Handle CORS preflight
   if (event.requestContext.http.method === "OPTIONS") {

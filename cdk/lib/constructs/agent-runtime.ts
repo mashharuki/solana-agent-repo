@@ -44,7 +44,7 @@ export class AgentRuntime extends Construct {
     super(scope, id);
 
     // モデルIDと環境に応じたタグを設定
-    const modelId = props.modelId ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
+    const modelId = props.modelId ?? "jp.anthropic.claude-haiku-4-5-20251001-v1:0 ";
 
     // Bedrock AgentのCloudFormationリソースを作成
     const cfnAgent = new bedrock.CfnAgent(this, "CfnAgent", {

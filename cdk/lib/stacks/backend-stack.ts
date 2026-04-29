@@ -53,7 +53,7 @@ export class BackendStack extends cdk.Stack {
 
     const isProd = props.environment === "prod";
     const modelId =
-      props.bedrockModelId ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
+      props.bedrockModelId ?? "jp.anthropic.claude-haiku-4-5-20251001-v1:0 ";
     const allowedOrigins = props.allowedOrigins ?? "*";
 
     // ----------------------------------------------------------------
