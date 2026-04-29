@@ -138,24 +138,34 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         .map((block) => block.text)
         .join("") ?? "";
 
-    // Return in Vercel AI SDK data stream format (v1) so useChat() works
-    // Format: 0:"<text chunk>"\n  then  d:{finishReason}\n
+    // Return in AI SDK v6 UIMessageChunk SSE format
+    // DefaultChatTransport expects: Content-Type: text/event-stream + x-vercel-ai-ui-message-stream: v1
     const finishReason = response.stopReason ?? "stop";
-    const promptTokens = response.usage?.inputTokens ?? 0;
-    const completionTokens = response.usage?.outputTokens ?? 0;
+    const messageId = `msg-${Date.now()}`;
+    const textId = `txt-${Date.now()}`;
 
-    const dataStream =
-      `0:${JSON.stringify(assistantText)}\n` +
-      `d:${JSON.stringify({ finishReason, usage: { promptTokens, completionTokens } })}\n`;
+    const chunks = [
+      { type: "start", messageId },
+      { type: "start-step" },
+      { type: "text-start", id: textId },
+      { type: "text-delta", id: textId, delta: assistantText },
+      { type: "text-end", id: textId },
+      { type: "finish-step" },
+      { type: "finish", finishReason },
+    ];
+
+    const sseBody = chunks.map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`).join("");
 
     return {
       statusCode: 200,
       headers: {
         ...corsHeaders(allowedOrigin),
-        "Content-Type": "text/plain; charset=utf-8",
-        "x-vercel-ai-data-stream": "v1",
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "x-vercel-ai-ui-message-stream": "v1",
+        "x-accel-buffering": "no",
       },
-      body: dataStream,
+      body: sseBody,
     };
   } catch (error: unknown) {
     console.error("Bedrock ConverseCommand error:", error);

@@ -1,0 +1,33 @@
+# node_modules は bun install --frozen-lockfile で再現する
+node_modules
+
+# ビルド成果物
+dist
+.mastra
+
+# バージョン管理
+.git
+.gitignore
+
+# 環境変数（秘密情報を除外）
+.env
+.env.local
+.env.*.local
+
+# ログ
+*.log
+npm-debug.log*
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# テスト成果物
+coverage
+
+# macOS
+.DS_Store
+
+# Biome キャッシュ
+.biome-cache

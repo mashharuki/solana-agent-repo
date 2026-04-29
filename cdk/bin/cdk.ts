@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib";
+import * as dotenv from "dotenv";
+import * as path from "path";
 import { BackendStack } from "../lib/stacks/backend-stack";
 import { FrontendStack } from "../lib/stacks/frontend-stack";
 import { StorageStack } from "../lib/stacks/storage-stack";
+
+// .env ファイルを読み込む（mastra-react/.env を優先、次に cdk/.env）
+dotenv.config({ path: path.join(__dirname, "../../mastra-react/.env") });
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 const app = new cdk.App();
 

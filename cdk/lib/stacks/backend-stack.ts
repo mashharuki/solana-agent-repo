@@ -2,6 +2,9 @@ import * as cdk from "aws-cdk-lib";
 import * as apigatewayv2 from "aws-cdk-lib/aws-apigatewayv2";
 import * as apigatewayv2Integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as ecrAssets from "aws-cdk-lib/aws-ecr-assets";
+import * as events from "aws-cdk-lib/aws-events";
+import * as eventsTargets from "aws-cdk-lib/aws-events-targets";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as lambdaNodejs from "aws-cdk-lib/aws-lambda-nodejs";
@@ -31,9 +34,13 @@ export interface BackendStackProps extends cdk.StackProps {
 /**
  * BackendStack — Lambda proxy + API Gateway HTTP API v2.
  *
- * Architecture:
- *   API Gateway → Lambda (Bedrock proxy) → Amazon Bedrock (Claude)
- *                                        → DynamoDB (memory)
+ * Architecture (updated):
+ *   API Gateway → Mastra Lambda (Docker container) → Mastra AI Agent
+ *                                                  → Solana Tools (on-chain operations)
+ *                                                  → Google Gemini (via GOOGLE_GENERATIVE_AI_API_KEY)
+ *
+ * Legacy Bedrock proxy (proxyFunction) is retained but not routed;
+ * remove it in a future cleanup once Mastra is confirmed stable.
  */
 export class BackendStack extends cdk.Stack {
   /** HTTP API v2 endpoint URL (used by FrontendStack / CloudFront) */
@@ -54,6 +61,9 @@ export class BackendStack extends cdk.Stack {
     const isProd = props.environment === "prod";
     const modelId =
       props.bedrockModelId ?? "jp.anthropic.claude-haiku-4-5-20251001-v1:0";
+    // Strip cross-region inference profile prefix (e.g. "jp.", "us.", "eu.", "apac.")
+    // so the IAM policy covers the underlying foundation model in all routing regions.
+    const baseModelId = modelId.replace(/^[a-z]{2,5}\./, "");
     const allowedOrigins = props.allowedOrigins ?? "*";
 
     // ----------------------------------------------------------------
@@ -98,7 +108,7 @@ export class BackendStack extends cdk.Stack {
     );
 
     // ----------------------------------------------------------------
-    // IAM — least-privilege grants
+    // IAM — least-privilege grants for Bedrock proxy (legacy, not routed)
     // ----------------------------------------------------------------
 
     // Read/write agent memory in DynamoDB
@@ -119,11 +129,57 @@ export class BackendStack extends cdk.Stack {
         // Restrict to specified model; use wildcard only if model family is unknown at synth time
         resources: [
           `arn:aws:bedrock:*::foundation-model/${modelId}`,
-          // Allow cross-region inference profiles (e.g. us.anthropic.*)
+          // Base model ID for cross-region inference profile routing
+          // (e.g. jp. prefix routes to ap-northeast-1/ap-northeast-3,
+          //  so both regions need access to the base model ARN)
+          `arn:aws:bedrock:*::foundation-model/${baseModelId}`,
+          // Allow cross-region inference profiles (e.g. jp.anthropic.*)
           `arn:aws:bedrock:*:*:inference-profile/*`,
         ],
       }),
     );
+
+    // ----------------------------------------------------------------
+    // Lambda — Mastra AI Agent (Docker container + Lambda Web Adapter)
+    //
+    // CDK が自動的に Dockerfile をビルドして ECR にプッシュする。
+    // Lambda Web Adapter が Lambda イベント ↔ HTTP 変換を担当。
+    // ----------------------------------------------------------------
+    const mastraLogGroup = new logs.LogGroup(this, "MastraLambdaLogs", {
+      logGroupName: `/aws/lambda/solana-agent-mastra-${props.environment}`,
+      retention: isProd
+        ? logs.RetentionDays.ONE_MONTH
+        : logs.RetentionDays.ONE_WEEK,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    const mastraFunction = new lambda.DockerImageFunction(
+      this,
+      "MastraFunction",
+      {
+        functionName: `solana-agent-mastra-${props.environment}`,
+        code: lambda.DockerImageCode.fromImageAsset(
+          // mastra-react/ ディレクトリの Dockerfile をビルド
+          path.join(__dirname, "../../../mastra-react"),
+          // Mac (arm64) でビルドしても Lambda (x86_64) 向けに固定する
+          { platform: ecrAssets.Platform.LINUX_AMD64 },
+        ),
+        timeout: cdk.Duration.seconds(60),
+        // 3008 MB → CPU が ~3× 増加してコールドスタート短縮（API GW 29 秒タイムアウト対策）
+        memorySize: 3008,
+        logGroup: mastraLogGroup,
+        environment: {
+          NODE_ENV: props.environment,
+          // インメモリ SQLite（デモ用）。永続化が必要な場合は Turso URL に差し替え。
+          MASTRA_LIBSQL_URL: "file::memory:?cache=shared",
+          // Google Gemini API キー — .env ファイル（mastra-react/.env または cdk/.env）から読み込む
+          GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "",
+        },
+      },
+    );
+
+    // IAM grants for Mastra Lambda
+    props.memoryTable.grantReadWriteData(mastraFunction);
 
     // ----------------------------------------------------------------
     // API Gateway HTTP API v2
@@ -144,17 +200,18 @@ export class BackendStack extends cdk.Stack {
       },
     });
 
-    const lambdaIntegration =
+    const mastraIntegration =
       new apigatewayv2Integrations.HttpLambdaIntegration(
-        "ProxyIntegration",
-        proxyFunction,
+        "MastraIntegration",
+        mastraFunction,
       );
 
-    // Route: POST /chat/{agentId}
+    // Route: POST /chat/{proxy+} → Mastra AI Agent
+    // {proxy+} でサブパス（例: /chat/solana-agent）を全て Mastra にルーティング
     this.httpApi.addRoutes({
-      path: "/chat/{agentId}",
+      path: "/chat/{proxy+}",
       methods: [apigatewayv2.HttpMethod.POST, apigatewayv2.HttpMethod.GET],
-      integration: lambdaIntegration,
+      integration: mastraIntegration,
     });
 
     this.apiUrl = this.httpApi.apiEndpoint;
@@ -181,6 +238,21 @@ export class BackendStack extends cdk.Stack {
     cdk.Tags.of(this).add("Stack", "backend");
 
     // ----------------------------------------------------------------
+    // Warm-up: EventBridge で5分ごとに Lambda を起動してコールドスタートを回避
+    // ----------------------------------------------------------------
+    const warmUpRule = new events.Rule(this, "MastraWarmUpRule", {
+      ruleName: `solana-agent-mastra-warmup-${props.environment}`,
+      description: "Keep Mastra Lambda warm to avoid cold start 504 errors",
+      schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
+    });
+    warmUpRule.addTarget(
+      new eventsTargets.LambdaFunction(mastraFunction, {
+        event: events.RuleTargetInput.fromObject({ source: "warmup" }),
+        retryAttempts: 0,
+      }),
+    );
+
+    // ----------------------------------------------------------------
     // Outputs
     // ----------------------------------------------------------------
     new cdk.CfnOutput(this, "ApiUrl", {
@@ -191,8 +263,14 @@ export class BackendStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, "ProxyFunctionArn", {
       value: proxyFunction.functionArn,
-      description: "Lambda proxy function ARN",
+      description: "Lambda Bedrock proxy function ARN (legacy, not routed)",
       exportName: `SolanaAgent-ProxyFunctionArn-${props.environment}`,
+    });
+
+    new cdk.CfnOutput(this, "MastraFunctionArn", {
+      value: mastraFunction.functionArn,
+      description: "Mastra AI Agent Lambda function ARN (active)",
+      exportName: `SolanaAgent-MastraFunctionArn-${props.environment}`,
     });
   }
 }
