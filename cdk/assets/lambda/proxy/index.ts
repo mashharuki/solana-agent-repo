@@ -44,7 +44,7 @@ function corsHeaders(allowedOrigin: string) {
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const allowedOrigin = process.env.ALLOWED_ORIGIN ?? "*";
   const modelId =
-    process.env.BEDROCK_MODEL_ID ?? "anthropic.claude-3-5-haiku-20241022-v1:0";
+    process.env.BEDROCK_MODEL_ID ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
 
   // Handle CORS preflight
   if (event.requestContext.http.method === "OPTIONS") {
@@ -59,7 +59,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     };
   }
 
-  let body: { messages?: Array<{ role: string; content: string }> };
+  // ai SDK v6 sends UIMessage with `parts` array; legacy v5 sent `content: string`
+  type IncomingPart = { type: string; text?: string };
+  type IncomingMessage = { role: string; content?: string; parts?: IncomingPart[] };
+  let body: { messages?: IncomingMessage[] };
 
   try {
     const raw = event.isBase64Encoded
@@ -85,12 +88,24 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   // Map to Bedrock Converse message format (role must be 'user' | 'assistant')
+  // Support ai SDK v6 (parts[]) and legacy v5 (content string)
   const bedrockMessages: Message[] = incomingMessages
     .filter((m) => m.role === "user" || m.role === "assistant")
-    .map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: [{ text: m.content }],
-    }));
+    .map((m) => {
+      const text = m.parts
+        ? m.parts
+            .filter(
+              (p): p is { type: "text"; text: string } =>
+                p.type === "text" && typeof p.text === "string",
+            )
+            .map((p) => p.text)
+            .join("")
+        : (m.content ?? "");
+      return text
+        ? ({ role: m.role as "user" | "assistant", content: [{ text }] } as Message)
+        : null;
+    })
+    .filter((m): m is Message => m !== null);
 
   // Ensure conversation starts with a user message
   if (bedrockMessages.length === 0 || bedrockMessages[0].role !== "user") {

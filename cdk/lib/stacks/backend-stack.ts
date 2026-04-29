@@ -23,7 +23,7 @@ export interface BackendStackProps extends cdk.StackProps {
   allowedOrigins?: string;
   /**
    * Bedrock foundation model ID for the Lambda proxy.
-   * @default 'anthropic.claude-3-5-haiku-20241022-v1:0'
+   * @default 'anthropic.claude-haiku-4-5-20251001-v1:0'
    */
   bedrockModelId?: string;
 }
@@ -53,7 +53,7 @@ export class BackendStack extends cdk.Stack {
 
     const isProd = props.environment === "prod";
     const modelId =
-      props.bedrockModelId ?? "anthropic.claude-3-5-haiku-20241022-v1:0";
+      props.bedrockModelId ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
     const allowedOrigins = props.allowedOrigins ?? "*";
 
     // ----------------------------------------------------------------

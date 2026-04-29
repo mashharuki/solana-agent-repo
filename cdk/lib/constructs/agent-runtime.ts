@@ -9,7 +9,7 @@ export interface AgentRuntimeProps {
   environment: "dev" | "staging" | "prod";
   /**
    * Bedrock foundation model ID the agent will use.
-   * @default 'anthropic.claude-3-5-haiku-20241022-v1:0'
+   * @default 'ap.anthropic.claude-haiku-4-5-20251001-v1:0'
    */
   modelId?: string;
   /** System instruction passed to the agent */
@@ -44,7 +44,7 @@ export class AgentRuntime extends Construct {
     super(scope, id);
 
     // モデルIDと環境に応じたタグを設定
-    const modelId = props.modelId ?? "anthropic.claude-3-5-haiku-20241022-v1:0";
+    const modelId = props.modelId ?? "us.anthropic.claude-haiku-4-5-20251001-v1:0";
 
     // Bedrock AgentのCloudFormationリソースを作成
     const cfnAgent = new bedrock.CfnAgent(this, "CfnAgent", {
