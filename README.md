@@ -2,6 +2,10 @@
 
 SolanaのAI Agentを使ったサンプルリポジトリです。
 
+## システム構成図
+
+![](./docs/img/aws-architecture.png)
+
 ## Agent skillのインストール
 
 ```bash
