@@ -349,8 +349,8 @@ style: |
 # Building AI Agents on Solana
 ## Mastra Framework を活用した次世代エージェント開発
 
-Solana Bootcamp Study Group
-2025.02.xx
+Solana Bootcamp 
+2025.05.08
 
 ---
 
