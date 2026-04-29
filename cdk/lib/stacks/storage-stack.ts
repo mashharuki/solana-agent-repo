@@ -18,6 +18,12 @@ export class StorageStack extends cdk.Stack {
   /** Secrets Manager secret containing third-party API keys */
   public readonly apiKeySecret: secretsmanager.Secret;
 
+  /**
+   * コンストラクター
+   * @param scope
+   * @param id
+   * @param props
+   */
   constructor(scope: Construct, id: string, props: StorageStackProps) {
     super(scope, id, props);
 

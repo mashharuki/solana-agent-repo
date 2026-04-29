@@ -5,19 +5,28 @@ import {
 } from "@aws-sdk/client-bedrock-runtime";
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 
+// Bedrock 実行結果用のクライアントを生成
 const bedrockClient = new BedrockRuntimeClient({});
 
-const SYSTEM_PROMPT = `You are a helpful Solana blockchain AI assistant for a demo application.
-You assist users with:
-- Checking SOL balances on Solana Devnet
-- Understanding Solana transactions and accounts
-- Explaining NFT minting and DeFi concepts on Solana
-- Guiding through Phantom Wallet interactions
-- Interpreting on-chain data and program calls
+// システムプロンプト — 役割と能力を定義
+const SYSTEM_PROMPT = `
+  You are a helpful Solana blockchain AI assistant for a demo application.
+  You assist users with:
+  - Checking SOL balances on Solana Devnet
+  - Understanding Solana transactions and accounts
+  - Explaining NFT minting and DeFi concepts on Solana
+  - Guiding through Phantom Wallet interactions
+  - Interpreting on-chain data and program calls
 
-Always be concise, accurate, and guide users through blockchain interactions safely.
-When a user wants to send SOL or interact with on-chain programs, explain the process clearly.`;
+  Always be concise, accurate, and guide users through blockchain interactions safely.
+  When a user wants to send SOL or interact with on-chain programs, explain the process clearly.
+`;
 
+/**
+ * CORSヘッダーを生成するユーティリティ関数
+ * @param allowedOrigin
+ * @returns
+ */
 function corsHeaders(allowedOrigin: string) {
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
@@ -27,6 +36,11 @@ function corsHeaders(allowedOrigin: string) {
   };
 }
 
+/**
+ * Lambda関数のエントリポイント — Bedrock Converse APIを呼び出してLLM応答を生成
+ * @param event
+ * @returns
+ */
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   const allowedOrigin = process.env.ALLOWED_ORIGIN ?? "*";
   const modelId =
@@ -46,6 +60,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   let body: { messages?: Array<{ role: string; content: string }> };
+
   try {
     const raw = event.isBase64Encoded
       ? Buffer.from(event.body, "base64").toString("utf-8")
@@ -60,6 +75,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   const incomingMessages = body.messages ?? [];
+
   if (incomingMessages.length === 0) {
     return {
       statusCode: 400,
@@ -88,6 +104,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   }
 
   try {
+    // Call Bedrock Converse API
     const response = await bedrockClient.send(
       new ConverseCommand({
         modelId,

@@ -4,6 +4,7 @@ import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 
+// StaticSite construct properties
 export interface StaticSiteProps {
   /** Environment name used in bucket naming */
   environment: "dev" | "staging" | "prod";
@@ -27,6 +28,12 @@ export class StaticSite extends Construct {
   public readonly bucket: s3.Bucket;
   public readonly distribution: cloudfront.Distribution;
 
+  /**
+   * コンストラクター
+   * @param scope
+   * @param id
+   * @param props
+   */
   constructor(scope: Construct, id: string, props: StaticSiteProps) {
     super(scope, id);
 

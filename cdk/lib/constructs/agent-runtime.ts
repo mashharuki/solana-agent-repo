@@ -3,6 +3,7 @@ import * as bedrock from "aws-cdk-lib/aws-bedrock";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
+// Agent ランタイム用のCDK Constructインターフェース定義
 export interface AgentRuntimeProps {
   /** Environment name — used for naming and tagging */
   environment: "dev" | "staging" | "prod";
@@ -33,11 +34,19 @@ export class AgentRuntime extends Construct {
   /** Bedrock Agent ARN */
   public readonly agentArn: string;
 
+  /**
+   * コンストラクター
+   * @param scope
+   * @param id
+   * @param props
+   */
   constructor(scope: Construct, id: string, props: AgentRuntimeProps) {
     super(scope, id);
 
+    // モデルIDと環境に応じたタグを設定
     const modelId = props.modelId ?? "anthropic.claude-3-5-haiku-20241022-v1:0";
 
+    // Bedrock AgentのCloudFormationリソースを作成
     const cfnAgent = new bedrock.CfnAgent(this, "CfnAgent", {
       agentName: `solana-ai-agent-${props.environment}`,
       foundationModel: modelId,

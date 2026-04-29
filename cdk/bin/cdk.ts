@@ -23,7 +23,7 @@ const environment = envName as Env;
 // AWS account/region from environment (required for stack-level constructs like S3 OAC)
 const awsEnv: cdk.Environment = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
-  region: process.env.CDK_DEFAULT_REGION ?? "us-east-1",
+  region: process.env.CDK_DEFAULT_REGION ?? "ap-northeast-1",
 };
 
 // ----------------------------------------------------------------

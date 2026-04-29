@@ -30,6 +30,12 @@ export class FrontendStack extends cdk.Stack {
   /** CloudFront distribution domain (e.g. d1234abcde.cloudfront.net) */
   public readonly distributionDomain: string;
 
+  /**
+   * コンストラクター
+   * @param scope
+   * @param id
+   * @param props
+   */
   constructor(scope: Construct, id: string, props: FrontendStackProps) {
     super(scope, id, props);
 

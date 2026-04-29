@@ -42,6 +42,12 @@ export class BackendStack extends cdk.Stack {
   /** The HTTP API Gateway construct */
   public readonly httpApi: apigatewayv2.HttpApi;
 
+  /**
+   * コンストラクター
+   * @param scope
+   * @param id
+   * @param props
+   */
   constructor(scope: Construct, id: string, props: BackendStackProps) {
     super(scope, id, props);
 

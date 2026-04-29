@@ -6,7 +6,7 @@
   },
   "scripts": {
     "format": "bunx biome format --write .",
-    "build": "tsc",
+    "build": "rm -rf build && tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk"
