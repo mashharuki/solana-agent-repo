@@ -44,7 +44,7 @@ export class FrontendStack extends cdk.Stack {
     // ----------------------------------------------------------------
     const site = new StaticSite(this, "Site", {
       environment: props.environment,
-      apiOriginDomain: props.apiUrl,
+      apiOriginDomain: cdk.Fn.select(2, cdk.Fn.split("/", props.apiUrl)),
       domainName: props.domainName,
     });
 
