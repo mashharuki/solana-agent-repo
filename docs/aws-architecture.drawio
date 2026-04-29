@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="solana-agent-aws" name="Solana AI Agent - AWS Architecture">
-        <mxGraphModel dx="723" dy="690" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="688" dy="438" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -61,10 +61,10 @@
                 <mxCell id="xray" value="X-Ray&lt;br&gt;(Tracing)" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.xray" parent="1" vertex="1">
                     <mxGeometry x="1280" y="340" width="48" height="48" as="geometry"/>
                 </mxCell>
-                <mxCell id="solana" value="Solana DevNet&lt;br&gt;(RPC / Blockchain)" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general_saml_token;sketch=0;fillColor=#D45B07;strokeColor=#ffffff;fontColor=#232F3E;fontSize=11;fontStyle=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                <mxCell id="solana" value="Solana DevNet&#xa;(RPC / Blockchain)" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general_saml_token;sketch=0;fillColor=#D45B07;strokeColor=#ffffff;fontColor=#232F3E;fontSize=11;fontStyle=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
                     <mxGeometry x="1200" y="560" width="48" height="48" as="geometry"/>
                 </mxCell>
-                <mxCell id="external-apis" value="External APIs&lt;br&gt;(Jupiter, Metaplex)" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general_internet_gateway;sketch=0;fillColor=#D45B07;strokeColor=#ffffff;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
+                <mxCell id="external-apis" value="External API&#xa;(Jupiter, Metaplex)" style="shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.general_internet_gateway;sketch=0;fillColor=#D45B07;strokeColor=#ffffff;fontColor=#232F3E;fontSize=11;verticalLabelPosition=bottom;verticalAlign=top;align=center;" parent="1" vertex="1">
                     <mxGeometry x="1200" y="690" width="48" height="48" as="geometry"/>
                 </mxCell>
                 <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#232F3E;strokeWidth=2;" parent="1" source="user" target="cloudfront" edge="1">
@@ -129,7 +129,7 @@
                 </mxCell>
                 <mxCell id="e5-label" value="Foundation Model" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#01A88D;" parent="e5" vertex="1" connectable="0">
                     <mxGeometry x="-0.2" relative="1" as="geometry">
-                        <mxPoint as="offset"/>
+                        <mxPoint x="-16" y="-20" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#C925D1;strokeWidth=2;" parent="1" source="agentcore" target="dynamodb" edge="1">
@@ -144,7 +144,12 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D45B07;strokeWidth=2;" parent="1" source="agentcore" target="solana" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="870" y="530"/>
+                            <mxPoint x="870" y="584"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="e8-label" value="Solana RPC&lt;br&gt;(DevNet)" style="edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=10;fontColor=#D45B07;" parent="e8" vertex="1" connectable="0">
                     <mxGeometry x="-0.2" relative="1" as="geometry">
@@ -152,7 +157,12 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D45B07;strokeWidth=1;dashed=1;" parent="1" source="agentcore" target="external-apis" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="820" y="530"/>
+                            <mxPoint x="820" y="714"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#E7157B;strokeWidth=1;dashed=1;" parent="1" source="agentcore" target="cloudwatch" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
