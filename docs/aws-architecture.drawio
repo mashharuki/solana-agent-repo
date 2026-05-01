@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="solana-agent-aws" name="Solana AI Agent - AWS Architecture">
-        <mxGraphModel dx="688" dy="438" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+        <mxGraphModel dx="203" dy="479" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -169,39 +169,6 @@
                 </mxCell>
                 <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;html=1;strokeColor=#E7157B;strokeWidth=1;dashed=1;" parent="1" source="lambda-proxy" target="cloudwatch" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#CCCCCC;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="1550" y="690" width="380" height="170" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-title" value="Legend" style="text;html=1;fontSize=12;fontStyle=1;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#232F3E;" parent="1" vertex="1">
-                    <mxGeometry x="1565" y="695" width="100" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-solid" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#232F3E;" parent="1" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="1570" y="735" as="sourcePoint"/>
-                        <mxPoint x="1630" y="735" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="legend-solid-label" value="Primary data flow" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1640" y="725" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-dashed" value="" style="endArrow=classic;html=1;strokeWidth=1;strokeColor=#999999;dashed=1;" parent="1" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="1570" y="765" as="sourcePoint"/>
-                        <mxPoint x="1630" y="765" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="legend-dashed-label" value="Secondary / Optional" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1640" y="755" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-note1" value="• AgentCore: Mastra agent managed runtime" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1565" y="790" width="350" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-note2" value="• Lambda: Fallback / pre-processing proxy" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1565" y="810" width="350" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-note3" value="• Target: Solana DevNet (learning env)" style="text;html=1;fontSize=10;align=left;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1565" y="830" width="350" height="20" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
