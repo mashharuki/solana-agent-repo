@@ -84,14 +84,12 @@ style: |
   /* PDF Print Quality Fixes */
   @media print {
     section.lead h1, section.title h1 {
-      /* Simplified gradient for PDF engine safety */
       background: none !important;
       -webkit-text-fill-color: #ffffff !important;
-      color: var(--accent-warm) !important; /* Use solid brand color for PDF impact */
+      color: var(--accent-warm) !important;
       background-image: linear-gradient(90deg, #ffffff, var(--accent-warm)) !important;
       -webkit-background-clip: text !important;
     }
-    /* Ensure title slide is visible */
     section.title h1 {
       color: #9945FF !important;
     }
@@ -102,6 +100,28 @@ style: |
   .grid-item { padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: #0f172a; font-size: 0.75em; }
   .grid-item .index { color: var(--accent-warm); font-weight: 800; font-size: 1.2em; }
   .highlight { background: linear-gradient(135deg, rgba(153, 69, 255, 0.1), rgba(20, 241, 149, 0.1)); border: 1px solid rgba(153, 69, 255, 0.3); border-radius: 12px; padding: 14px 22px; font-size: 1.05em; text-align: center; margin: 10px 0; }
+
+  /* --- Table Styles --- */
+  table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    font-size: 0.9em;
+    background: #ffffff;
+    color: #000000 !important;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  th {
+    background: linear-gradient(135deg, var(--accent), #4c1d95);
+    color: #ffffff;
+    padding: 14px 24px;
+    text-align: left;
+  }
+  td {
+    padding: 12px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #000000 !important;
+  }
 
 ---
 
@@ -149,6 +169,7 @@ Solana Bootcamp
 <span style="color: var(--muted);"><br/>開発からデプロイまで</span>
 </div>
 </div>
+<br/>
 <div class="grid-item" style="margin-top: 10px; text-align: center; border-left: 4px solid var(--accent-warm);">
 <span class="index">07</span>
 <strong>Future Outlook</strong><br/>オンチェーン UX の変革と次のステップ
@@ -202,7 +223,7 @@ AI エージェントがオンチェーンで自律的に行動する際, Solana
 
 ---
 
-# Robust Tech Stack for Production Agents
+# Robust Tech Stack for Agents
 
 最新のライブラリとフレームワークを組み合わせ, 安全かつ高速な開発を実現します。
 
