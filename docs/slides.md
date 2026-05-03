@@ -365,7 +365,7 @@ Solana Bootcamp
 <div class="grid-item">
 <span class="index">02</span>
 <strong>Technical Stack</strong>
-<span style="color: var(--muted);">最先端の技術選定</span>
+<span style="color: var(--muted);"><br/>最先端の技術選定</span>
 </div>
 <div class="grid-item">
 <span class="index">03</span>
@@ -385,7 +385,7 @@ Solana Bootcamp
 <div class="grid-item">
 <span class="index">06</span>
 <strong>Dev Workflow</strong>
-<span style="color: var(--muted);">開発からデプロイまで</span>
+<span style="color: var(--muted);"><br/>開発からデプロイまで</span>
 </div>
 <div class="grid-item" style="grid-column: span 3; text-align: center; border-left: 4px solid var(--accent-warm);">
 <span class="index">07</span>
@@ -401,23 +401,18 @@ Solana Bootcamp
 
 ---
 
-# Solana Enables Autonomous Agentic Workflows
+# Solana Enables Agentic Workflows
 
 AI エージェントがオンチェーンで自律的に行動する際, Solana は最適な環境を提供します。
 
-<div class="columns">
+<div >
 <div>
 
-- **Cost-Efficient**: 頻繁な**マイクロトランザクション**を許容する低価格。
+- **Cost-Efficient**: 頻繁な**マイクロトランザクション**向き
 - **Real-Time Speed**: 意思決定を妨げない**高いスループット**。
-- **Rich Ecosystem**: **Jupiter** や **Metaplex** 等の強力な道具。
+- **Rich Ecosystem**: **Jupiter** や **Metaplex** 等の便利なAPI
 - **Sovereign Identity**: エージェントが自ら**資産を管理**する基盤。
 
-</div>
-<div class="card accent">
-<div style="font-size: 0.9em;">
-AI の「思考（LLM）」と Solana の「実行（On-chain）」が融合し, 人間を介さない経済活動が現実のものになります。
-</div>
 </div>
 </div>
 
@@ -430,7 +425,7 @@ AI の「思考（LLM）」と Solana の「実行（On-chain）」が融合し,
 <!-- _class: section -->
 
 # Modern Technical Stack
-### 2025 年の標準的なエージェント開発基盤
+### 2026 年の標準的なエージェント開発基盤
 
 ---
 
