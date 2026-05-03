@@ -583,26 +583,7 @@ AI エージェントが勝手に資金を動かさない **Safe Signing** プ�
 
 <div style="text-align: center; margin-top: 10px;">
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant UI as React UI
-    participant Agent as Mastra Agent
-    participant RPC as Solana RPC
-    participant Wallet as Phantom
-
-    User->>UI: 「SOL を送金して」
-    UI->>Agent: POST /chat (Intent)
-    Agent->>RPC: getLatestBlockhash
-    Agent-->>UI: { serializedTx, description }
-    UI->>Wallet: signAndSendTransaction(tx)
-    Wallet-->>User: Approval Dialog
-    User->>Wallet: Approve
-    Wallet->>RPC: sendRawTransaction
-    RPC-->>UI: Signature
-    UI->>Agent: Explain Result
-    Agent-->>User: 「送金完了しました！」
-```
+[![](https://mermaid.ink/img/pako:eNplkr2O00AQx19ltdUhmcO28rnFSeGgiHToojgREkozsudsC2fX7K4hXBQpuQKao4CGko6SB0CIlzEUV_EKjD-CcmSL1f49v535z6zXPFQRcsENvipQhvgkhVjDciEZLQit0mxuUDc6B23TMM1BWjYfMzBsisTQ-Tg-ipF2Qp6BsRoafYxNJ-cVFKgMJFTqGHkOWYZ1qklCWpG5BqqMPTw7m48FK7e3weUFK28-3W13d-8_lrvP5e5ruf3QkmPiageCTS6DGXsUJmDZyVha-vaggeo4cWRCsBjtBVg09nGmwpcJmOQQaquuGTlIIUuvMZqtHBahCXWa21RJtjmo3HQgmEljOZJRgDKaaZCGZkfoiV21Dhquzk6JBRvluVavIWP0KpmK73W9z9kweC9B24OhOlN4c1CqoSi47yAgR2ALjcdzerrKM0glPbEpMvt_97U_mnoz7t_fbn99f1cP_We9f_nzY0fT5w6PdRpxYXWBDl-iXkIl-brKt-A2wSUuuKBjhFdQ1eELuaFr9PIvlFrub2pVxAkXV5AZUkUe0du0v-o_hLpFfa4Kabnw-nUKLtZ8RcobnvY6rt_pdIfuoDdwuw5_y0XXPx30O8O-3-95vuf63sbh13VRlwJd92B5m78hOhVA?type=png)](https://mermaid.live/edit#pako:eNplkr2O00AQx19ltdUhmcO28rnFSeGgiHToojgREkozsudsC2fX7K4hXBQpuQKao4CGko6SB0CIlzEUV_EKjD-CcmSL1f49v535z6zXPFQRcsENvipQhvgkhVjDciEZLQit0mxuUDc6B23TMM1BWjYfMzBsisTQ-Tg-ipF2Qp6BsRoafYxNJ-cVFKgMJFTqGHkOWYZ1qklCWpG5BqqMPTw7m48FK7e3weUFK28-3W13d-8_lrvP5e5ruf3QkmPiageCTS6DGXsUJmDZyVha-vaggeo4cWRCsBjtBVg09nGmwpcJmOQQaquuGTlIIUuvMZqtHBahCXWa21RJtjmo3HQgmEljOZJRgDKaaZCGZkfoiV21Dhquzk6JBRvluVavIWP0KpmK73W9z9kweC9B24OhOlN4c1CqoSi47yAgR2ALjcdzerrKM0glPbEpMvt_97U_mnoz7t_fbn99f1cP_We9f_nzY0fT5w6PdRpxYXWBDl-iXkIl-brKt-A2wSUuuKBjhFdQ1eELuaFr9PIvlFrub2pVxAkXV5AZUkUe0du0v-o_hLpFfa4Kabnw-nUKLtZ8RcobnvY6rt_pdIfuoDdwuw5_y0XXPx30O8O-3-95vuf63sbh13VRlwJd92B5m78hOhVA)
 
 </div>
 
