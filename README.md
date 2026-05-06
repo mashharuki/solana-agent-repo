@@ -412,3 +412,5 @@ npx skills add https://github.com/solana-foundation/solana-dev-skill
 - [GitHub — awesome-solana-ai](https://github.com/solana-foundation/awesome-solana-ai)
 - [Jupiter v6 API Docs](https://station.jup.ag/docs/apis/swap-api)
 - [Metaplex MPL Core Docs](https://developers.metaplex.com/core)
+- [Solana Bootcamp向け AI Agent デモ動画](https://www.youtube.com/watch?v=mHLzj2YTkQk)
+- [Solana Bootcamp向け AI Agent ピッチスライド](https://speakerdeck.com/mashharuki/building-ai-agents-on-solana-mastra-framework-wohuo-yong-sitaci-shi-dai-ezientokai-fa)
