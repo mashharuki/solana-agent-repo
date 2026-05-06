@@ -195,27 +195,23 @@ AI エージェントがオンチェーンで自律的に行動する際, Solana
 <div class="grid-item">
 <span class="index">01</span>
 <strong>Cost-Efficient</strong><br/>
-頻繁な**マイクロトランザクション**向き
+頻繁な<strong>マイクロトランザクション</strong>向き
 </div>
 <div class="grid-item">
 <span class="index">02</span>
 <strong>Real-Time Speed</strong><br/>
-意思決定を妨げない**高いスループット**。
+意思決定を妨げない<strong>高いスループット</strong>。
 </div>
 <div class="grid-item">
 <span class="index">03</span>
 <strong>Rich Ecosystem</strong><br/>
-**Jupiter** や **Metaplex** 等の便利なAPI
+<strong>Jupiter</strong> や <strong>Metaplex</strong> 等の便利なAPI
 </div>
 <div class="grid-item">
 <span class="index">04</span>
 <strong>Sovereign Identity</strong><br/>
-エージェントが自ら**資産を管理**する基盤。
+エージェントが自ら<strong>資産を管理</strong>する基盤。
 </div>
-</div>
-
-<div class="highlight">
-  AI Agent = 24/7 稼働する「自律的なオンチェーン・プレイヤー」
 </div>
 
 ---
@@ -252,7 +248,6 @@ AI エージェントがオンチェーンで自律的に行動する際, Solana
 </div>
 <div class="grid-item">
 <span class="index">Solana / Web3</span>
-<strong>web3.js 1.x + Metaplex</strong>
 <ul style="font-size: 0.8em; margin: 4px 0;">
 <li>MPL Core / DAS API (NFTs)</li>
 <li>Jupiter v6 API (Swap)</li>
